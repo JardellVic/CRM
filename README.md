@@ -1,59 +1,59 @@
-# Sistema de IntegraÁ„o e ComunicaÁ„o
+# Sistema de Integra√ß√£o e Comunica√ß√£o
 
-?? **Vis„o Geral**
+**Vis√£o Geral**
 
-Desenvolvi um sistema em WPF e C# que integra de forma eficiente o banco de dados terceirizado da nossa empresa com um banco de dados local. Esta integraÁ„o permite a geraÁ„o de listas de clientes altamente segmentadas, com base em compras de produtos ou serviÁos dentro de intervalos de tempo especÌficos. O resultado È uma filtragem precisa e organizada que otimiza a segmentaÁ„o e proporciona insights valiosos.
+Desenvolvi um sistema em WPF e C# que integra de forma eficiente o banco de dados terceirizado da nossa empresa com um banco de dados local. Esta integra√ß√£o permite a gera√ß√£o de listas de clientes altamente segmentadas, com base em compras de produtos ou servi√ßos dentro de intervalos de tempo espec√≠ficos. O resultado √© uma filtragem precisa e organizada que otimiza a segmenta√ß√£o e proporciona insights valiosos.
 
-?? **IntegraÁ„o com a API do GupShup**
+**Integra√ß√£o com a API do GupShup**
 
-Um dos principais destaques do sistema È sua integraÁ„o direta com a API do GupShup, uma plataforma lÌder em comunicaÁ„o multicanal. Com essa funcionalidade, os templates de mensagens e suas vari·veis s„o importados diretamente para a interface do sistema. O usu·rio pode selecionar o template desejado e mapear manualmente as colunas da planilha gerada pelo sistema para as vari·veis, oferecendo flexibilidade para ajustes din‚micos.
+Um dos principais destaques do sistema √© sua integra√ß√£o direta com a API do GupShup, uma plataforma l√≠der em comunica√ß√£o multicanal. Com essa funcionalidade, os templates de mensagens e suas vari√°veis s√£o importados diretamente para a interface do sistema. O usu√°rio pode selecionar o template desejado e mapear manualmente as colunas da planilha gerada pelo sistema para as vari√°veis, oferecendo flexibilidade para ajustes din√¢micos.
 
-?? **Conformidade e Privacidade**
+**Conformidade e Privacidade**
 
-AlÈm disso, o sistema realiza automaticamente o processo de opt-in para cada n˙mero de telefone antes de enviar as mensagens, garantindo conformidade com as pr·ticas de marketing e privacidade.
+Al√©m disso, o sistema realiza automaticamente o processo de opt-in para cada n√∫mero de telefone antes de enviar as mensagens, garantindo conformidade com as pr√°ticas de marketing e privacidade.
 
-?? **Monitoramento e RelatÛrios**
+**Monitoramento e Relat√≥rios**
 
-O envio das mensagens È monitorado em tempo real, com relatÛrios gerados no console, permitindo acompanhamento imediato do progresso dos envios. Este sistema n„o sÛ simplifica a comunicaÁ„o com os clientes, mas tambÈm melhora a eficiÍncia e a precis„o das nossas campanhas de marketing.
+O envio das mensagens √© monitorado em tempo real, com relat√≥rios gerados no console, permitindo acompanhamento imediato do progresso dos envios. Este sistema n√£o s√≥ simplifica a comunica√ß√£o com os clientes, mas tamb√©m melhora a efici√™ncia e a precis√£o das nossas campanhas de marketing.
 
 ## Funcionalidades
 
-- IntegraÁ„o com banco de dados local e terceirizado.
-- GeraÁ„o de listas segmentadas de clientes.
-- ImportaÁ„o e mapeamento de templates de mensagens via API do GupShup.
-- Processo autom·tico de opt-in para n˙meros de telefone.
-- Monitoramento em tempo real do envio de mensagens com relatÛrios detalhados.
+- Integra√ß√£o com banco de dados local e terceirizado.
+- Gera√ß√£o de listas segmentadas de clientes.
+- Importa√ß√£o e mapeamento de templates de mensagens via API do GupShup.
+- Processo autom√°tico de opt-in para n√∫meros de telefone.
+- Monitoramento em tempo real do envio de mensagens com relat√≥rios detalhados.
 
 ## Tecnologias
 
 - WPF (Windows Presentation Foundation)
 - C#
 - API do GupShup
-- Excel (para manipulaÁ„o de dados e templates)
+- Excel (para manipula√ß√£o de dados e templates)
 
 ## Como Usar
 
-1. **ConfiguraÁ„o Inicial:**
-   - Certifique-se de que o banco de dados local e o banco de dados terceirizado est„o corretamente configurados e integrados.
+1. **Configura√ß√£o Inicial:**
+   - Certifique-se de que o banco de dados local e o banco de dados terceirizado est√£o corretamente configurados e integrados.
 
-2. **ImportaÁ„o de Templates:**
-   - Conecte-se ‡ API do GupShup e importe os templates de mensagens para a interface do sistema.
+2. **Importa√ß√£o de Templates:**
+   - Conecte-se √† API do GupShup e importe os templates de mensagens para a interface do sistema.
 
-3. **ConfiguraÁ„o de Dados:**
-   - Selecione o template desejado e mapeie as colunas da planilha para as vari·veis do template.
+3. **Configura√ß√£o de Dados:**
+   - Selecione o template desejado e mapeie as colunas da planilha para as vari√°veis do template.
 
 4. **Opt-in e Envio de Mensagens:**
-   - O sistema realizar· automaticamente o opt-in para cada n˙mero de telefone antes de enviar as mensagens.
+   - O sistema realizar√° automaticamente o opt-in para cada n√∫mero de telefone antes de enviar as mensagens.
 
 5. **Monitoramento:**
-   - Acompanhe o progresso do envio das mensagens e visualize relatÛrios em tempo real no console.
+   - Acompanhe o progresso do envio das mensagens e visualize relat√≥rios em tempo real no console.
 
-## ContribuiÁ„o
+## Contribui√ß√£o
 
-Se vocÍ deseja contribuir para o desenvolvimento deste sistema, sinta-se ‡ vontade para abrir uma issue ou enviar um pull request com suas melhorias e sugestıes.
+Se voc√™ deseja contribuir para o desenvolvimento deste sistema, sinta-se √† vontade para abrir uma issue ou enviar um pull request com suas melhorias e sugest√µes.
 
 ## Contato
 
-Para mais informaÁıes, entre em contato comigo atravÈs do [LinkedIn](https://www.linkedin.com/in/jarsilva/) ou pelo e-mail [jardellvictor12@gmail.com](mailto:jardellvictor12@gmail.com).
+Para mais informa√ß√µes, entre em contato comigo atrav√©s do [LinkedIn](https://www.linkedin.com/in/jarsilva/) ou pelo e-mail [jardellvictor12@gmail.com](mailto:jardellvictor12@gmail.com).
 
-#inovaÁ„o #automaÁ„o #tecnologia #comunicaÁ„o #GupShup #marketingdigital #privacidade #desenvolvimentodesoftware #integraÁ„osistÍmica
+#inova√ß√£o #automa√ß√£o #tecnologia #comunica√ß√£o #GupShup #marketingdigital #privacidade #desenvolvimentodesoftware #integra√ß√£osist√™mica
