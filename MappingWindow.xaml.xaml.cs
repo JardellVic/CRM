@@ -151,9 +151,6 @@ namespace CRM
 
             ColunaVariaveisSelecionada = "[" + string.Join(",", sortedVariables.ConvertAll(v => $"\"{v}\"")) + "]";
 
-            Home.Instance.NumeroColuna = ColunaNumeroSelecionada;
-            Home.Instance.NomeColuna = ColunaNomeSelecionada;
-            Home.Instance.VariaveisColuna = ColunaVariaveisSelecionada;
 
             this.Close();
         }
@@ -180,6 +177,11 @@ namespace CRM
             }
 
             return rowData;
+        }
+
+        private void btnCancelar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

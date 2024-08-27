@@ -50,7 +50,7 @@ O envio das mensagens é monitorado em tempo real, com relatórios gerados no co
 
 ## Contribuição
 
-Se você deseja contribuir para o desenvolvimento deste sistema, sinta-se à vontade para abrir uma issue ou enviar um pull request com suas melhorias e sugestões.
+Se você deseja contribuir para o desenvolvimento deste sistema, sinta-se à vontade para abrir uma issue com suas melhorias e sugestões.
 
 ## Contato
 

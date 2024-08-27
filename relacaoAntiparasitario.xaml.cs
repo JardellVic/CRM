@@ -41,7 +41,7 @@ namespace CRM
                     dataTable.Columns.Add("Grupo", typeof(int)); 
 
                     // Filtrar registros com caracteres indesejados
-                    var caracteresIndesejados = new List<string> { "@", "*", "#", "&" };
+                    var caracteresIndesejados = new List<string> { "@", "*", "#"};
                     var pattern = string.Join("|", caracteresIndesejados.Select(System.Text.RegularExpressions.Regex.Escape));
 
                     var filteredRows = dataTable.AsEnumerable()

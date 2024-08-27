@@ -13,6 +13,8 @@ using Microsoft.Win32;
 using OfficeOpenXml;
 using Newtonsoft.Json.Linq;
 using CRM.conexao.API;
+using System.Windows.Threading;
+
 
 namespace CRM
 {
@@ -33,10 +35,13 @@ namespace CRM
         private Dictionary<string, string> templateTextMap;
         private Dictionary<string, int> templateParamsMap;
         private Dictionary<string, string> templateIdMap;
+        private DispatcherTimer timer;
+        private TimeSpan tempoRestante;
 
         public Home()
         {
             InitializeComponent();
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             apiManager = new APIManager();
             client = new HttpClient();
             templateTextMap = new Dictionary<string, string>();
@@ -83,6 +88,7 @@ namespace CRM
 
             double valorMarketing = 0.0625 * quantidadeContatos;
             statusMarketing.Content = $"Valor Marketing: ${valorMarketing:F2}";
+   
         }
 
         private void CmbTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -209,9 +215,38 @@ namespace CRM
             var linhas = new List<LineData>();
             var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text); // Certifique-se de que columnNames é acessível
 
+            if (columnNames == null)
+            {
+                ShowError("Não foi possível obter os nomes das colunas do Excel.");
+                return;
+            }
+
             int numeroIndex = columnNames.IndexOf(colunaNumero);
             int nomeIndex = columnNames.IndexOf(colunaNome);
-            List<int> variaveisIndices = variaveisColuna.Trim('[', ']').Split(',').Select(v => columnNames.IndexOf(v.Trim('"'))).ToList();
+
+            if (numeroIndex == -1 || nomeIndex == -1)
+            {
+                ShowError("As colunas especificadas não foram encontradas no Excel.");
+                return;
+            }
+
+            // Trate o caso em que variaveisColuna pode ser null ou vazio
+            if (string.IsNullOrEmpty(variaveisColuna))
+            {
+                MessageBox.Show("A coluna de variáveis está vazia.");
+                return;
+            }
+
+            List<int> variaveisIndices = variaveisColuna.Trim('[', ']').Split(',')
+                .Select(v => columnNames.IndexOf(v.Trim('"')))
+                .ToList();
+
+            // Verifica se algum índice é inválido
+            if (variaveisIndices.Any(i => i < 0 || i >= columnNames.Count))
+            {
+                ShowError("Alguns índices de variáveis não correspondem às colunas do Excel.");
+                return;
+            }
 
             foreach (var row in rowData)
             {
@@ -230,6 +265,7 @@ namespace CRM
             Home.Instance.LinhasParaEnviar = linhas;
         }
 
+
         private int GetParamsCountForTemplate(string templateName)
         {
             return templateParamsMap.ContainsKey(templateName) ? templateParamsMap[templateName] : 0;
@@ -244,11 +280,43 @@ namespace CRM
             }
         }
 
+        private void InicializarContagemRegressiva(int quantidadeContatos)
+        {
+            // Definindo o tempo total em segundos
+            double totalSegundos = 6 * quantidadeContatos;
+            tempoRestante = TimeSpan.FromSeconds(totalSegundos);
+
+            // Inicializa o timer
+            timer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            if (tempoRestante.TotalSeconds > 0)
+            {
+                tempoRestante = tempoRestante.Subtract(TimeSpan.FromSeconds(1));
+                statusTempo.Content = $"Tempo Restante: {tempoRestante.ToString(@"hh\:mm\:ss")}";
+            }
+            else
+            {
+                timer.Stop();
+                statusTempo.Content = "Tempo Esgotado";
+            }
+        }
+
         private async void btnEnviarDisparo_Click(object sender, RoutedEventArgs e)
         {
             int sucessoCount = 0;
             int erroCount = 0;
             int totalLinhas = Home.Instance.LinhasParaEnviar.Count;
+
+            // Inicializa a contagem regressiva
+            InicializarContagemRegressiva(totalLinhas);
 
             // Inicializa a ProgressBar
             progressDisparo.IsIndeterminate = false;
@@ -258,6 +326,9 @@ namespace CRM
             // Limpa o conteúdo anterior e inicializa o contador de progresso
             txtBlockConsole.Inlines.Clear();
             txtBlockConsole.Inlines.Add(new Run($"Iniciando envio... (0/{totalLinhas})") { Foreground = Brushes.Yellow });
+
+            // Rolagem automática
+            scrollViewerConsole.ScrollToEnd();
 
             try
             {
@@ -280,6 +351,9 @@ namespace CRM
                     progressDisparo.Value = linha.index + 1;
                     txtBlockConsole.Inlines.Add(new Run($"\nProgresso: {linha.index + 1}/{totalLinhas}") { Foreground = Brushes.Blue });
 
+                    // Rolagem automática
+                    scrollViewerConsole.ScrollToEnd();
+
                     await Task.Delay(1000); // Aguarda 1 segundo entre envios
                 }
             }
@@ -294,6 +368,7 @@ namespace CRM
                                 "Resultado do Envio", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+
 
         private async Task<bool> EnviarLinhaAsync(LineData linha)
         {
@@ -371,11 +446,10 @@ namespace CRM
                 return false;
             }
         }
-    
 
-
-//-----------------------------------------------------------------------------------------------------------------------------------------------------------
-private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
+     //-----------------------------------------------------------------------------------------------------------------------------------------------------------
+        
+        private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AtualizarBanco atualizarBancoPage = new AtualizarBanco();
             atualizarBancoPage.Show();
@@ -473,6 +547,7 @@ private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
             relacaoWindow.Show();
             lblGerarRacao.Text = "Gerar Ração:✅";
         }
+
         private void vrfcRacao_Click(object sender, RoutedEventArgs e)
         {
             // Obter o caminho do Desktop

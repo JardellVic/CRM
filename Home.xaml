@@ -85,20 +85,23 @@
         </GroupBox>
         <GroupBox x:Name="disparoPlanet" Header="Disparo" Margin="585,18,24,58" Foreground="White">
             <Grid Height="634">
-                <ComboBox x:Name="cmbTemplates" HorizontalAlignment="Center" Margin="0,43,0,0" VerticalAlignment="Top" Width="653" Height="28"/>
+                <ComboBox x:Name="cmbTemplates" HorizontalAlignment="Center" Margin="0,43,0,0" VerticalAlignment="Top" Width="625" Height="28"/>
                 <Label Content="Templates" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
                 <Border x:Name="borderBackMensagem" BorderBrush="Black" BorderThickness="1" Margin="10,81,10,322">
                     <Border.Background>
                         <ImageBrush ImageSource="/backWhats.jpg" TileMode="None" Stretch="UniformToFill"/>
                     </Border.Background>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="9,9,9,9">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="1,1,0,1">
                         <TextBlock x:Name="txtTemplate" TextWrapping="Wrap" Text="" Margin="9,9,9,9" FontSize="18" FontFamily="Bahnschrift"/>
                     </ScrollViewer>
 
                 </Border>
                 <Button Name="SelectFileButton" Content="Selecionar Arquivo" Width="120" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="17,311,0,0" Click="SelectFileButton_Click"/>
-                <TextBox Name="FilePathTextBox" Width="250" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="143,311,0,0" IsReadOnly="True" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
-                <TextBlock x:Name="txtBlockConsole" HorizontalAlignment="Center" Margin="0,341,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="144" Width="653" Background="#FF1F1E1E"/>
+                <TextBox Name="FilePathTextBox" Width="250" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="143,315,0,0" IsReadOnly="True" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
+                <ScrollViewer x:Name="scrollViewerConsole" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="17,345,10,145">
+                    <TextBlock x:Name="txtBlockConsole" TextWrapping="Wrap" Background="#FF1F1E1E" Foreground="White"/>
+                </ScrollViewer>
+
                 <ProgressBar x:Name="progressDisparo" HorizontalAlignment="Left" Height="24" Margin="10,499,0,0" VerticalAlignment="Top" Width="421"/>
                 <Button x:Name="btnEnviarDisparo" Content="Enviar" HorizontalAlignment="Left" Margin="459,496,0,0" VerticalAlignment="Top" Height="29" Width="158" Click="btnEnviarDisparo_Click"/>
             </Grid>
@@ -117,7 +120,7 @@
                 <TextBlock x:Name="statusContatosText" Text="Quantidade de contatos:" />
             </StatusBarItem>
 
-            <StatusBarItem x:Name="statusUtility" Margin="0,0,200,0">
+            <StatusBarItem x:Name="statusUtility" Margin="0,0,150,0">
                 <StatusBarItem.Style>
                     <Style TargetType="StatusBarItem">
                         <Setter Property="Foreground" Value="White"/>
@@ -126,13 +129,21 @@
                 <TextBlock x:Name="statusUtilityText" Text="Valor Utility:" />
             </StatusBarItem>
 
-            <StatusBarItem x:Name="statusMarketing">
+            <StatusBarItem x:Name="statusMarketing" Margin="0,0,120,0">
                 <StatusBarItem.Style>
                     <Style TargetType="StatusBarItem">
                         <Setter Property="Foreground" Value="White"/>
                     </Style>
                 </StatusBarItem.Style>
                 <TextBlock x:Name="statusMarketingText" Text="Valor Marketing:" />
+            </StatusBarItem>
+            <StatusBarItem x:Name="statusTempo">
+                <StatusBarItem.Style>
+                    <Style TargetType="StatusBarItem">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StatusBarItem.Style>
+                <TextBlock x:Name="statusTempoText" Text="Tempo Médio:" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
