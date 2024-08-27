@@ -1,0 +1,19 @@
+﻿<Window x:Name="AtualizarBancoPage" x:Class="CRM.AtualizarBanco"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRM"
+        mc:Ignorable="d"
+        Title="Atualizar Banco" Height="400" Width="300"
+        Background="Black" ResizeMode="NoResize">
+    <Grid>
+        <Label x:Name="lblDataInicial" Content="Data Inicial (dd/mm/aaaa):" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Width="200"/>
+        <DatePicker x:Name="dataInicial" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,40,0,0" Width="200"/>
+        <Label x:Name="lblDataFinal" Content="Data Final (dd/mm/aaaa):" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,90,0,0" Width="200"/>
+        <DatePicker x:Name="dateFinal" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,120,0,0" Width="200"/>
+        <Button x:Name="btnSearch" Content="Pesquisar" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,170,0,0" Width="200" Background="#FF414141" Foreground="White" Click="btnSearch_Click"/>
+        <Button x:Name="btnExportarExcel" Content="Exportar para Excel" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,210,0,0" Width="200" Background="#FF414141" Foreground="White" Click="btnExportarExcel_Click"/>
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,278,0,0" Height="5" Background="White" Foreground="Red" Width="200"/>
+    </Grid>
+</Window>

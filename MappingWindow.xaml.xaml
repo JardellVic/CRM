@@ -1,0 +1,12 @@
+﻿<Window x:Class="CRM.MappingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Mapeamento de Colunas" Height="400" Width="600">
+    <Grid Background="#FF191919">
+        <StackPanel>
+            <ItemsControl x:Name="ColumnMappingPanel" Margin="10"/>
+            <TextBlock Text="Mapeie as colunas para o template:" Foreground="White" FontSize="18" Width="284"/>
+        </StackPanel>
+        <Button Content="Confirmar" HorizontalAlignment="Center" Margin="0,308,0,23" Click="ConfirmButton_Click" Width="124"/>
+    </Grid>
+</Window>

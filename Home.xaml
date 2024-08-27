@@ -1,0 +1,139 @@
+﻿<Window x:Class="CRM.Home"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRM"
+        mc:Ignorable="d"
+        Title="Gestão de Relacionamento com o Cliente (CRM)" Height="741" Width="1280" Background="#FF191919">
+    <Grid Width="1280" Height="720">
+        <Menu x:Name="menuBar" Margin="0,0,0,702" Background="#FF191919">
+            <MenuItem x:Name="antiparasitario" Header="Antiparasitario" Foreground="White" Click="antiparasitario_Click"/>
+            <MenuItem x:Name="suplemento" Header="Suplemento" Foreground="White" Click="suplemento_Click"/>
+            <MenuItem x:Name="vermifugo" Header="Vermifugo" Foreground="White" Click="vermifugo_Click"/>
+            <MenuItem x:Name="racao" Header="Ração" Foreground="White" Click="racao_Click"/>
+            <MenuItem x:Name="welcome" Header="Welcome" Foreground="White" Click="welcome_Click"/>
+            <MenuItem x:Name="vacina" Header="Vacina" Foreground="White" Click="vacina_Click"/>
+            <MenuItem x:Name="milteforan" Header="Milteforan" Foreground="White" Click="milteforan_Click"/>
+            <MenuItem x:Name="banco" Header="Banco" Foreground="White" Click="BancoMenuItem_Click"/>
+            <MenuItem x:Name="relatorio" Header="Relatorio Retorno" Foreground="White" Click="relatorio_Click"/>
+
+
+        </Menu>
+
+        <GroupBox x:Name="grpAnalises" Header="Analisar" Margin="10,18,700,474" Foreground="White">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- Definindo as linhas e colunas do Grid -->
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+                    <RowDefinition Height="Auto" MinHeight="100"/>
+
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="161"/>
+                    <ColumnDefinition Width="144"/>
+                    <ColumnDefinition Width="135"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Linha 1 -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarAntiparasitario" Text="Gerar Anti-Parasitário:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriAntiparasitario" Text="Verificar Anti-Parasitário:" Foreground="White"/>
+                    <Button x:Name="vrfcAntiparasitario" Content="Verificar" Width="151" Height="20" HorizontalAlignment="Left" Click="vrfcAntiparasitario_Click"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarSuplmento" Text="Gerar Suplemento:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriSuplemento" Text="Verificar Suplemento:" Foreground="White"/>
+                    <Button x:Name="vrfcSuplemento" Content="Verificar" Width="130" Height="20" Click="vrfcSuplemento_Click"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarVermifugo" Text="Gerar Vermífugo:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriVermifugo" Text="Verificar Vermífugo:" Foreground="White"/>
+                    <Button x:Name="vrfcVermifugo" Content="Verificar" Width="125" Height="20" Click="vrfcVermifugo_Click"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarRacao" Text="Gerar Ração:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriRacao" Text="Verificar Ração:" Foreground="White"/>
+                    <Button x:Name="vrfcRacao" Content="Verificar" Width="110" Height="20" Click="vrfcRacao_Click"/>
+                </StackPanel>
+
+                <!-- Linha 2 -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarWelcome" Text="Gerar Welcome:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriWelcome" Text="Verificar Welcome:" Foreground="White"/>
+                    <Button x:Name="vrfcWelcome" Content="Verificar" Width="151" Height="20" HorizontalAlignment="Left" Click="vrfcWelcome_Click"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarVacina" Text="Gerar Vacina:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriVacina" Text="Verificar Vacina:" Foreground="White"/>
+                    <Button x:Name="vrfcVacina" Content="Verificar" Width="130" Height="20" Click="vrfcVacina_Click"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="5,5,5,5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="lblGerarMilteforan" Text="Gerar Milteforan:" Foreground="White"/>
+                    <TextBlock x:Name="txtVeriMilteforan" Text="Verificar Milteforan:" Foreground="White"/>
+                    <Button x:Name="vrfcMilteforan" Content="Verificar" Width="124" Height="20" Click="vrfcMilteforan_Click"/>
+                </StackPanel>
+
+            </Grid>
+        </GroupBox>
+        <GroupBox x:Name="disparoPlanet" Header="Disparo" Margin="585,18,24,58" Foreground="White">
+            <Grid Height="634">
+                <ComboBox x:Name="cmbTemplates" HorizontalAlignment="Center" Margin="0,43,0,0" VerticalAlignment="Top" Width="653" Height="28"/>
+                <Label Content="Templates" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
+                <Border x:Name="borderBackMensagem" BorderBrush="Black" BorderThickness="1" Margin="10,81,10,322">
+                    <Border.Background>
+                        <ImageBrush ImageSource="/backWhats.jpg" TileMode="None" Stretch="UniformToFill"/>
+                    </Border.Background>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="9,9,9,9">
+                        <TextBlock x:Name="txtTemplate" TextWrapping="Wrap" Text="" Margin="9,9,9,9" FontSize="18" FontFamily="Bahnschrift"/>
+                    </ScrollViewer>
+
+                </Border>
+                <Button Name="SelectFileButton" Content="Selecionar Arquivo" Width="120" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="17,311,0,0" Click="SelectFileButton_Click"/>
+                <TextBox Name="FilePathTextBox" Width="250" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="143,311,0,0" IsReadOnly="True" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"/>
+                <TextBlock x:Name="txtBlockConsole" HorizontalAlignment="Center" Margin="0,341,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="144" Width="653" Background="#FF1F1E1E"/>
+                <ProgressBar x:Name="progressDisparo" HorizontalAlignment="Left" Height="24" Margin="10,499,0,0" VerticalAlignment="Top" Width="421"/>
+                <Button x:Name="btnEnviarDisparo" Content="Enviar" HorizontalAlignment="Left" Margin="459,496,0,0" VerticalAlignment="Top" Height="29" Width="158" Click="btnEnviarDisparo_Click"/>
+            </Grid>
+        </GroupBox>
+        <StatusBar Margin="0,675,0,0" Background="#FF212121" Height="28" VerticalAlignment="Top">
+            <StatusBarItem Margin="0,0,150,0">
+                <TextBlock Text="Desenvolvido por Jardell Silva" Foreground="White" />
+            </StatusBarItem>
+
+            <StatusBarItem x:Name="statusContatos" Margin="0,0,150,0">
+                <StatusBarItem.Style>
+                    <Style TargetType="StatusBarItem">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StatusBarItem.Style>
+                <TextBlock x:Name="statusContatosText" Text="Quantidade de contatos:" />
+            </StatusBarItem>
+
+            <StatusBarItem x:Name="statusUtility" Margin="0,0,200,0">
+                <StatusBarItem.Style>
+                    <Style TargetType="StatusBarItem">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StatusBarItem.Style>
+                <TextBlock x:Name="statusUtilityText" Text="Valor Utility:" />
+            </StatusBarItem>
+
+            <StatusBarItem x:Name="statusMarketing">
+                <StatusBarItem.Style>
+                    <Style TargetType="StatusBarItem">
+                        <Setter Property="Foreground" Value="White"/>
+                    </Style>
+                </StatusBarItem.Style>
+                <TextBlock x:Name="statusMarketingText" Text="Valor Marketing:" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
