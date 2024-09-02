@@ -19,6 +19,7 @@ namespace CRM
             SetupDates();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             dbHelper = new conexaoMouraWelcome();
+            _dataTable = new DataTable();
         }
 
         private void SetupDates()
@@ -34,6 +35,7 @@ namespace CRM
             {
                 // Converter a data de acordo com o formato dd/MM/yyyy
                 DateTime startDate = DateTime.ParseExact(txtDataInicial.Text, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).Date;
+                //DateTime endDate = DateTime.Now.AddDays(-1).Date.AddSeconds(-1);
                 DateTime endDate = startDate.AddDays(1).AddSeconds(-1); // Fim do dia
 
                 progressBar.Visibility = Visibility.Visible;
@@ -60,9 +62,6 @@ namespace CRM
             }
         }
 
-
-
-
         private async void btnExportarExcel_Click(object sender, RoutedEventArgs e)
         {
             if (_dataTable == null || _dataTable.Rows.Count == 0)
@@ -70,23 +69,45 @@ namespace CRM
                 MessageBox.Show("Nenhum dado para exportar.");
                 return;
             }
+           
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string outputPath = Path.Combine(desktopPath, "Welcome.xlsx");
-            Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
+            string? directoryPath = Path.GetDirectoryName(outputPath);
 
-            // Filtrar as colunas desejadas
+            if (directoryPath != null)
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+            else
+            {
+                // Caso o caminho do diretório seja nulo, exibe uma mensagem de erro
+                MessageBox.Show("Não foi possível determinar o caminho do diretório para salvar o arquivo.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Filtra as colunas desejadas
             DataTable filteredTable = FilterColumns(_dataTable);
 
+            // Exibe a barra de progresso e define como indeterminada
             progressBar.Visibility = Visibility.Visible;
             progressBar.IsIndeterminate = true;
 
+            // Executa a operação de salvamento em uma tarefa separada
             await Task.Run(() => SaveToExcel(filteredTable, outputPath));
 
+            // Oculta a barra de progresso
             progressBar.Visibility = Visibility.Collapsed;
 
-            MessageBox.Show($"Arquivo salvo!", "Concluído", MessageBoxButton.OK);
+            // Exibe uma mensagem de sucesso e fecha a janela
+            MessageBox.Show($"Arquivo salvo em {outputPath}!", "Concluído", MessageBoxButton.OK);
             this.Close();
         }
+
+        /*  private DataTable FilterColumns(DataTable dataTable)
+         {
+             // Retorna o DataTable original sem filtrar as colunas
+             return dataTable;
+         } */
 
         private DataTable FilterColumns(DataTable dataTable)
         {
@@ -112,7 +133,6 @@ namespace CRM
             return filteredTable;
         }
 
-
         private void SaveToExcel(DataTable dataTable, string filepath)
         {
             using (var package = new ExcelPackage())
@@ -130,7 +150,5 @@ namespace CRM
                 package.SaveAs(new FileInfo(filepath));
             }
         }
-
-
     }
 }

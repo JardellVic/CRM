@@ -23,7 +23,7 @@ namespace CRM
         private void SetupDates()
         {
             DateTime today = DateTime.Now;
-            DateTime startDate = today.AddMonths(-11).AddDays(-29);
+            DateTime startDate = today.AddMonths(-11).AddDays(-28);
             txtDataInicial.Text = startDate.ToString("dd/MM/yyyy");
         }
 

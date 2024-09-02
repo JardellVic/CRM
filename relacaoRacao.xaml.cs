@@ -69,6 +69,8 @@ namespace CRM
                 .Where(row => !row["nome"].ToString().Contains("#") &&
                               !row["nome"].ToString().Contains("@") &&
                               !row["nome"].ToString().Contains("&") &&
+                              !row["nome"].ToString().Contains("MERCADO LIVRE") &&
+                              !row["nome"].ToString().Contains("CONSUMIDOR FINAL") &&
                               DateTime.TryParse(row["Data da Venda"].ToString(), out DateTime dataVenda) && dataVenda >= recentDate &&
                               (row["Nome_Produto"].ToString().StartsWith("RAÇÃO") || row["Nome_Produto"].ToString().StartsWith("RACAO")))
                 .CopyToDataTable();
@@ -95,7 +97,7 @@ namespace CRM
                         ProximaCompra = proximaCompra
                     };
                 })
-                .Where(x => x.ProximaCompra.Date == DateTime.Now.AddDays(2).Date)
+                .Where(x => x.ProximaCompra.Date == DateTime.Now.AddDays(3).Date)
                 .ToList();
 
             // Criar DataTable para salvar no Excel

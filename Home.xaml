@@ -14,7 +14,7 @@
             <MenuItem x:Name="racao" Header="Ração" Foreground="White" Click="racao_Click"/>
             <MenuItem x:Name="welcome" Header="Welcome" Foreground="White" Click="welcome_Click"/>
             <MenuItem x:Name="vacina" Header="Vacina" Foreground="White" Click="vacina_Click"/>
-            <MenuItem x:Name="milteforan" Header="Milteforan" Foreground="White" Click="milteforan_Click"/>
+            <MenuItem x:Name="milteforan" Header="Milteforan" Foreground="White" Click="milteforan_Click" IsEnabled="False"/>
             <MenuItem x:Name="banco" Header="Banco" Foreground="White" Click="BancoMenuItem_Click"/>
             <MenuItem x:Name="relatorio" Header="Relatorio Retorno" Foreground="White" Click="relatorio_Click"/>
 

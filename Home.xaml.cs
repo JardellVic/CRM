@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -14,7 +10,6 @@ using OfficeOpenXml;
 using Newtonsoft.Json.Linq;
 using CRM.conexao.API;
 using System.Windows.Threading;
-
 
 namespace CRM
 {
@@ -38,6 +33,7 @@ namespace CRM
         private DispatcherTimer timer;
         private TimeSpan tempoRestante;
 
+        #region //API PLANETFONE
         public Home()
         {
             InitializeComponent();
@@ -193,14 +189,12 @@ namespace CRM
             var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
             var rowData = GetRowDataFromExcel(FilePathTextBox.Text);
 
-            // Atualiza a quantidade de contatos
             int quantidadeContatos = rowData.Count;
             AtualizarStatusBar(quantidadeContatos);
 
             MappingWindow mappingWindow = new MappingWindow(paramsCount, columnNames, rowData);
             mappingWindow.ShowDialog();
 
-            // Processar dados da planilha conforme as colunas selecionadas
             if (!string.IsNullOrEmpty(mappingWindow.ColunaNumeroSelecionada) &&
                 !string.IsNullOrEmpty(mappingWindow.ColunaNomeSelecionada))
             {
@@ -213,7 +207,7 @@ namespace CRM
         private void ProcessRowData(string colunaNumero, string colunaNome, string variaveisColuna, List<List<string>> rowData)
         {
             var linhas = new List<LineData>();
-            var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text); // Certifique-se de que columnNames é acessível
+            var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
 
             if (columnNames == null)
             {
@@ -230,7 +224,6 @@ namespace CRM
                 return;
             }
 
-            // Trate o caso em que variaveisColuna pode ser null ou vazio
             if (string.IsNullOrEmpty(variaveisColuna))
             {
                 MessageBox.Show("A coluna de variáveis está vazia.");
@@ -241,7 +234,6 @@ namespace CRM
                 .Select(v => columnNames.IndexOf(v.Trim('"')))
                 .ToList();
 
-            // Verifica se algum índice é inválido
             if (variaveisIndices.Any(i => i < 0 || i >= columnNames.Count))
             {
                 ShowError("Alguns índices de variáveis não correspondem às colunas do Excel.");
@@ -264,7 +256,6 @@ namespace CRM
 
             Home.Instance.LinhasParaEnviar = linhas;
         }
-
 
         private int GetParamsCountForTemplate(string templateName)
         {
@@ -354,7 +345,7 @@ namespace CRM
                     // Rolagem automática
                     scrollViewerConsole.ScrollToEnd();
 
-                    await Task.Delay(1000); // Aguarda 1 segundo entre envios
+                    await Task.Delay(500); // Aguarda 0.5 segundo entre envios
                 }
             }
             catch (Exception ex)
@@ -369,15 +360,12 @@ namespace CRM
             }
         }
 
-
         private async Task<bool> EnviarLinhaAsync(LineData linha)
         {
             try
             {
-                // Chama o método para fazer o opt-in do número
                 bool optinResult = await OptinNumeroAsync(linha.Numero);
 
-                // Exibe a mensagem no console com base no resultado do opt-in
                 if (optinResult)
                 {
                     txtBlockConsole.Inlines.Add(new Run("\nOptIn feito com sucesso") { Foreground = Brushes.Green });
@@ -385,7 +373,7 @@ namespace CRM
                 else
                 {
                     txtBlockConsole.Inlines.Add(new Run("Erro ao fazer optin") { Foreground = Brushes.Red });
-                    return false; // Se falhar no opt-in, não envia o template
+                    return false;
                 }
 
                 var formData = new MultipartFormDataContent
@@ -446,9 +434,8 @@ namespace CRM
                 return false;
             }
         }
-
-     //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-        
+        #endregion 
+        #region // lISTAS 
         private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AtualizarBanco atualizarBancoPage = new AtualizarBanco();
@@ -658,7 +645,6 @@ namespace CRM
             var relacaoWindow = new relatorioRetorno();
             relacaoWindow.Show();
         }
-     //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
+        #endregion
     }
 }

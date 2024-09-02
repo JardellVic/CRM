@@ -42,7 +42,7 @@ namespace CRM
                     dataTable.Columns.Add("Grupo", typeof(int));
 
                     // Filtrar registros com caracteres indesejados
-                    var caracteresIndesejados = new List<string> { "@", "*", "#", "&" };
+                    var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
                     var pattern = string.Join("|", caracteresIndesejados.Select(System.Text.RegularExpressions.Regex.Escape));
 
                     var filteredRows = dataTable.AsEnumerable()
@@ -56,10 +56,10 @@ namespace CRM
                     // Definir grupos de dias e produtos
                     var gruposProdutos = new Dictionary<int, List<int>>
                         {
-                            { 20, new List<int> { 52836 } },
-                            { 30, new List<int> { 45288, 769, 745, 44188, 754, 45613, 41644 } },
-                            { 40, new List<int> { 51531, 42652 } },
-                            { 60, new List<int> { 50816, 44273, 774, 780 } }
+                            { 19, new List<int> { 52836 } },
+                            { 29, new List<int> { 45288, 769, 745, 44188, 754, 45613, 41644 } },
+                            { 39, new List<int> { 51531, 42652 } },
+                            { 59, new List<int> { 50816, 44273, 774, 780 } }
                     };
 
                     // Lista para armazenar todos os resultados
