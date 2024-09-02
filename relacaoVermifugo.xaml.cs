@@ -52,6 +52,7 @@ namespace CRM
 
                     // Data atual
                     var dataAtual = DateTime.Today;
+                    var isSegundaFeira = dataAtual.DayOfWeek == DayOfWeek.Monday;
 
                     // Definir grupos de dias e produtos
                     var gruposProdutos = new Dictionary<int, List<int>>
@@ -59,7 +60,7 @@ namespace CRM
 
                             { 29, new List<int> { 2033, 2966, 451 } },
                             { 89, new List<int> { 44862, 41015, 44420, 44837, 42341, 42342, 43327, 48485, 3130, 462, 38075, 2964, 677, 4578, 1919, 2004, 2881, 5163, 48485, 462, 690, 461, 448, 444, 48482, 45352, 5163, 5162, 690, 692} },
-             
+
                         };
 
                     // Lista para armazenar todos os resultados
@@ -70,67 +71,81 @@ namespace CRM
                     {
                         var dias = grupo.Key;
                         var produtos = grupo.Value;
-                        var dataFiltro = dataAtual.AddDays(-dias).ToString("dd/MM/yyyy");
 
-                        // Filtragem das linhas
-                        var dfFiltrado = filteredRows
-                            .Where(row =>
+                        var datasFiltro = new List<string>
                             {
-                                var produto = row.Field<object>("Produto");
-                                int produtoInt;
+                            dataAtual.AddDays(-dias).ToString("dd/MM/yyyy")
+                        };
 
-                                // Tentar converter para int, se falhar, usar um valor padrão ou pular a linha
-                                if (produto != null && int.TryParse(produto.ToString(), out produtoInt))
-                                {
-                                    return row.Field<string>("Data da Venda") == dataFiltro &&
-                                           produtos.Contains(produtoInt);
-                                }
-
-                                return false;
-                            })
-                            .ToList();
-
-                        foreach (var row in dfFiltrado)
+                        if (isSegundaFeira)
                         {
-                            var newRow = row;
-                            newRow["Grupo"] = dias;
-                            resultadosCompletos.Add(newRow);
+                            datasFiltro.Add(dataAtual.AddDays(-dias - 1).ToString("dd/MM/yyyy"));
+                            datasFiltro.Add(dataAtual.AddDays(-dias - 2).ToString("dd/MM/yyyy"));
+                            datasFiltro.Add(dataAtual.AddDays(-dias - 3).ToString("dd/MM/yyyy"));
                         }
 
+                        foreach (var dataFiltro in datasFiltro)
+                        {
+                            // Filtragem das linhas
+                            var dfFiltrado = filteredRows
+                                .Where(row =>
+                                {
+                                    var produto = row.Field<object>("Produto");
+                                    int produtoInt;
+
+                                    // Tentar converter para int, se falhar, usar um valor padrão ou pular a linha
+                                    if (produto != null && int.TryParse(produto.ToString(), out produtoInt))
+                                    {
+                                        return row.Field<string>("Data da Venda") == dataFiltro &&
+                                               produtos.Contains(produtoInt);
+                                    }
+
+                                    return false;
+                                })
+                                .ToList();
+
+                            foreach (var row in dfFiltrado)
+                            {
+                                var newRow = row;
+                                newRow["Grupo"] = dias;
+                                resultadosCompletos.Add(newRow);
+                            }
+
+                        }
+
+                        // Criar uma nova DataTable apenas com as colunas desejadas
+                        var resultadosFiltradosDataTable = new DataTable();
+                        resultadosFiltradosDataTable.Columns.Add("nome", typeof(string));
+                        resultadosFiltradosDataTable.Columns.Add("fone", typeof(string));
+                        resultadosFiltradosDataTable.Columns.Add("fone2", typeof(string));
+                        resultadosFiltradosDataTable.Columns.Add("Nome_Produto", typeof(string));
+                        resultadosFiltradosDataTable.Columns.Add("Data da Venda", typeof(string));
+                        resultadosFiltradosDataTable.Columns.Add("Grupo", typeof(int));
+
+                        // Copiar as linhas filtradas para a nova DataTable
+                        foreach (var row in resultadosCompletos)
+                        {
+                            var newRow = resultadosFiltradosDataTable.NewRow();
+                            newRow["nome"] = row["Nome"];
+                            newRow["fone"] = row["Fone"];
+                            newRow["fone2"] = row["fone2"];
+                            newRow["Nome_Produto"] = row["Nome_Produto"];
+                            newRow["Data da Venda"] = row["Data da Venda"];
+                            newRow["Grupo"] = row["Grupo"];
+                            resultadosFiltradosDataTable.Rows.Add(newRow);
+                        }
+
+                        var newWorkbook = new XLWorkbook();
+                        var newWorksheet = newWorkbook.Worksheets.Add("Resultado");
+                        newWorksheet.Cell(1, 1).InsertTable(resultadosFiltradosDataTable);
+                        newWorkbook.SaveAs(outputFilePath);
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            MessageBox.Show($"Arquivo salvo: {outputFilePath}", "Concluído", MessageBoxButton.OK);
+                            this.Close();
+                        });
                     }
-
-                    // Criar uma nova DataTable apenas com as colunas desejadas
-                    var resultadosFiltradosDataTable = new DataTable();
-                    resultadosFiltradosDataTable.Columns.Add("nome", typeof(string));
-                    resultadosFiltradosDataTable.Columns.Add("fone", typeof(string));
-                    resultadosFiltradosDataTable.Columns.Add("fone2", typeof(string));
-                    resultadosFiltradosDataTable.Columns.Add("Nome_Produto", typeof(string));
-                    resultadosFiltradosDataTable.Columns.Add("Data da Venda", typeof(string));
-                    resultadosFiltradosDataTable.Columns.Add("Grupo", typeof(int));
-
-                    // Copiar as linhas filtradas para a nova DataTable
-                    foreach (var row in resultadosCompletos)
-                    {
-                        var newRow = resultadosFiltradosDataTable.NewRow();
-                        newRow["nome"] = row["Nome"];
-                        newRow["fone"] = row["Fone"];
-                        newRow["fone2"] = row["fone2"];
-                        newRow["Nome_Produto"] = row["Nome_Produto"];
-                        newRow["Data da Venda"] = row["Data da Venda"];
-                        newRow["Grupo"] = row["Grupo"];
-                        resultadosFiltradosDataTable.Rows.Add(newRow);
-                    }
-
-                    var newWorkbook = new XLWorkbook();
-                    var newWorksheet = newWorkbook.Worksheets.Add("Resultado");
-                    newWorksheet.Cell(1, 1).InsertTable(resultadosFiltradosDataTable);
-                    newWorkbook.SaveAs(outputFilePath);
-
-                    Dispatcher.Invoke(() =>
-                    {
-                        MessageBox.Show($"Arquivo salvo: {outputFilePath}", "Concluído", MessageBoxButton.OK);
-                        this.Close();
-                    });
                 }
                 catch (Exception ex)
                 {
