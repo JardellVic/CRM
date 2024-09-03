@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml;
 using System.Data;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -23,6 +24,28 @@ namespace CRM
 
             MessageBox.Show("Arquivo salvo com sucesso!", "Sucesso", MessageBoxButton.OK, MessageBoxImage.Information);
             this.Close();
+        }
+
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
+
+            // Remove non-numeric characters
+            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
+
+            // Format the string
+            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
+            }
+            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
+            }
+
+            // If the number doesn't fit the pattern, return as is
+            return phoneNumber;
         }
 
         private void ProcessData()
@@ -102,29 +125,31 @@ namespace CRM
 
             // Criar DataTable para salvar no Excel
             var resultTable = new DataTable();
-            resultTable.Columns.Add("Nome", typeof(string));
-            resultTable.Columns.Add("Fone", typeof(string));
-            resultTable.Columns.Add("Fone2", typeof(string));
+            resultTable.Columns.Add("nome", typeof(string));
+            resultTable.Columns.Add("fone", typeof(string));
+            resultTable.Columns.Add("fone2", typeof(string));
             resultTable.Columns.Add("Nome_Produto", typeof(string)); // Alterado para "Nome_Produto"
             resultTable.Columns.Add("Media Dias Entre Compras", typeof(double));
             resultTable.Columns.Add("Data Última Compra", typeof(DateTime));
             resultTable.Columns.Add("Próxima Compra", typeof(DateTime));
 
-            foreach (var item in groupedRows)
-            {
-                var row = resultTable.NewRow();
-                row["Nome"] = item.Nome;
-                row["Fone"] = item.Fone;
-                row["Fone2"] = item.Fone2;
-                row["Nome_Produto"] = item.NomeProduto; // Usando o valor de "Nome_Produto"
-                row["Media Dias Entre Compras"] = item.MediaDiasEntreCompras;
-                row["Data Última Compra"] = item.DataUltimaCompra;
-                row["Próxima Compra"] = item.ProximaCompra;
-                resultTable.Rows.Add(row);
-            }
+                    foreach (var item in groupedRows)
+                    {
+                        var row = resultTable.NewRow();
+                        row["nome"] = item.Nome;
+                        row["fone"] = FormatPhoneNumber(item.Fone);      // Formatação aplicada aqui
+                        row["fone2"] = FormatPhoneNumber(item.Fone2);    // Formatação aplicada aqui
+                        row["Nome_Produto"] = item.NomeProduto;          // Usando o valor de "Nome_Produto"
+                        row["Media Dias Entre Compras"] = item.MediaDiasEntreCompras;
+                        row["Data Última Compra"] = item.DataUltimaCompra;
+                        row["Próxima Compra"] = item.ProximaCompra;
+                        resultTable.Rows.Add(row);
+                    }
 
-            // Salvar os resultados em um novo arquivo Excel
-            using (var newPackage = new ExcelPackage(new FileInfo(outputFilePath)))
+
+
+                    // Salvar os resultados em um novo arquivo Excel
+                    using (var newPackage = new ExcelPackage(new FileInfo(outputFilePath)))
             {
                 var newWorksheet = newPackage.Workbook.Worksheets.Add("Resultado");
                 newWorksheet.Cells["A1"].LoadFromDataTable(resultTable, true);

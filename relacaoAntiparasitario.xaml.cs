@@ -1,7 +1,8 @@
 ﻿using ClosedXML.Excel;
 using System.Data;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace CRM
 {
@@ -40,17 +41,17 @@ namespace CRM
 
                     // Filtrar registros com caracteres indesejados
                     var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
-                    var pattern = string.Join("|", caracteresIndesejados.Select(System.Text.RegularExpressions.Regex.Escape));
+                    var pattern = string.Join("|", caracteresIndesejados.Select(Regex.Escape));
 
                     var filteredRows = dataTable.AsEnumerable()
-                        .Where(row => !System.Text.RegularExpressions.Regex.IsMatch(row.Field<string>("nome"), pattern))
+                        .Where(row => !Regex.IsMatch(row.Field<string>("nome"), pattern))
                         .ToList();
 
                     var dataAtual = DateTime.Today;
                     var isSegundaFeira = dataAtual.DayOfWeek == DayOfWeek.Monday;
 
                     var gruposProdutos = new Dictionary<int, List<int>>
-                       {
+                    {
                         { 13, new List<int> { 52333 } },
                         { 27, new List<int> { 3996 } },
                         { 29, new List<int> { 964, 725, 722, 11, 15, 493, 499, 494, 47211, 48769, 49689, 43919, 41404, 52799, 51370, 731, 43616 } },
@@ -83,7 +84,7 @@ namespace CRM
                         var produtos = grupo.Value;
 
                         var datasFiltro = new List<string>
-                            {
+                        {
                             dataAtual.AddDays(-dias).ToString("dd/MM/yyyy")
                         };
 
@@ -118,8 +119,8 @@ namespace CRM
                             {
                                 var newRow = resultadosCompletos.NewRow();
                                 newRow["nome"] = row["Nome"];
-                                newRow["fone"] = row["Fone"];
-                                newRow["fone2"] = row["Fone2"];
+                                newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
+                                newRow["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
                                 newRow["Nome_Produto"] = row["Nome_Produto"];
                                 newRow["Data da Venda"] = row["Data da Venda"];
                                 newRow["Grupo"] = dias;
@@ -149,19 +150,28 @@ namespace CRM
                     });
                 }
             });
-}
+        }
 
-        private DataTable ConvertListToDataTable(List<DataRow> rows)
+        private string FormatPhoneNumber(string phoneNumber)
         {
-            if (rows.Count == 0)
-                return new DataTable();
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
 
-            var dataTable = rows[0].Table.Clone();
-            foreach (var row in rows)
+            // Remove non-numeric characters
+            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
+
+            // Format the string
+            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
             {
-                dataTable.ImportRow(row);
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
             }
-            return dataTable;
+            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
+            }
+
+            // If the number doesn't fit the pattern, return as is
+            return phoneNumber;
         }
     }
 }

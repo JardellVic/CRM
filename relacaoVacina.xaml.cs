@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace CRM
 {
@@ -59,8 +60,27 @@ namespace CRM
             }
         }
 
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
 
+            // Remove non-numeric characters
+            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
 
+            // Format the string
+            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
+            }
+            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
+            }
+
+            // If the number doesn't fit the pattern, return as is
+            return phoneNumber;
+        }
 
         private async void btnExportarExcel_Click(object sender, RoutedEventArgs e)
         {
@@ -105,7 +125,7 @@ namespace CRM
                 newRow["Proprietario"] = row["Proprietario"];
                 // Formatando a data para o formato dd/MM/yyyy
                 newRow["Data"] = Convert.ToDateTime(row["data"]).ToString("dd/MM/yyyy");
-                newRow["Fone"] = row["fone"];
+                newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
                 newRow["Pet"] = row["nome_animal"];
                 newRow["Serviço"] = row["Servico"];
                 filteredTable.Rows.Add(newRow);

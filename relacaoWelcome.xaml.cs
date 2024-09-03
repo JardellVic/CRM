@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace CRM
 {
@@ -125,12 +126,34 @@ namespace CRM
                 DataRow newRow = filteredTable.NewRow();
                 newRow["Nome"] = row["Nome"];
                 newRow["Data_Cadastro"] = row["Data_Cadastro"];
-                newRow["Fone"] = row["Fone"];
-                newRow["Fone2"] = row["Fone2"];
+                newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
+                newRow["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
                 filteredTable.Rows.Add(newRow);
             }
 
             return filteredTable;
+        }
+
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
+
+            // Remove non-numeric characters
+            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
+
+            // Format the string
+            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
+            }
+            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
+            }
+
+            // If the number doesn't fit the pattern, return as is
+            return phoneNumber;
         }
 
         private void SaveToExcel(DataTable dataTable, string filepath)
