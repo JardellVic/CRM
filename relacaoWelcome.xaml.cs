@@ -115,24 +115,33 @@ namespace CRM
             DataTable filteredTable = new DataTable();
 
             // Adicionar as colunas específicas
-            filteredTable.Columns.Add("Nome", typeof(string));
+            filteredTable.Columns.Add("nome", typeof(string));
             filteredTable.Columns.Add("Data_Cadastro", typeof(DateTime));
-            filteredTable.Columns.Add("Fone", typeof(string));
-            filteredTable.Columns.Add("Fone2", typeof(string));
+            filteredTable.Columns.Add("fone", typeof(string));
+            filteredTable.Columns.Add("fone2", typeof(string));
+
+            // Filtrar as linhas com base nos critérios especificados
+            var filteredRows = dataTable.AsEnumerable()
+                .Where(row => !row["Nome"].ToString().Contains("#") &&
+                              !row["Nome"].ToString().Contains("@") &&
+                              !row["Nome"].ToString().Contains("&") &&
+                              !row["Nome"].ToString().Contains("MERCADO LIVRE") &&
+                              !row["Nome"].ToString().Contains("CONSUMIDOR FINAL"));
 
             // Preencher o DataTable filtrado com os dados
-            foreach (DataRow row in dataTable.Rows)
+            foreach (var row in filteredRows)
             {
                 DataRow newRow = filteredTable.NewRow();
                 newRow["Nome"] = row["Nome"];
                 newRow["Data_Cadastro"] = row["Data_Cadastro"];
-                newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
-                newRow["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
+                newRow["Fone"] = FormatPhoneNumber(row["Fone"].ToString());
+                newRow["Fone2"] = FormatPhoneNumber(row["Fone2"].ToString());
                 filteredTable.Rows.Add(newRow);
             }
 
             return filteredTable;
         }
+
 
         private string FormatPhoneNumber(string phoneNumber)
         {

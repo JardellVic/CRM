@@ -645,6 +645,14 @@ namespace CRM
             var relacaoWindow = new relatorioRetorno();
             relacaoWindow.Show();
         }
+
+        private void clientesPorProduto_Click(object sender, RoutedEventArgs e)
+        {
+            var relacaoWindow = new relacaoCpP();
+            relacaoWindow.Show();
+        }
         #endregion
+
+
     }
 }

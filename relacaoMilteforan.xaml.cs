@@ -127,7 +127,7 @@ namespace CRM
                         foreach (var row in resultadosCompletos)
                         {
                             var newRow = resultadosFiltradosDataTable.NewRow();
-                            newRow["nome"] = row["Nome"];
+                            newRow["nome"] = row["nome"];
                             newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
                             newRow["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
                             newRow["Nome_Produto"] = row["Nome_Produto"];

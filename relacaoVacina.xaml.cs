@@ -112,17 +112,25 @@ namespace CRM
             DataTable filteredTable = new DataTable();
 
             // Adicionar as colunas específicas com os nomes corretos
-            filteredTable.Columns.Add("Proprietario", typeof(string));
+            filteredTable.Columns.Add("nome", typeof(string));
             filteredTable.Columns.Add("Data", typeof(string));
-            filteredTable.Columns.Add("Fone", typeof(string));
+            filteredTable.Columns.Add("fone", typeof(string));
             filteredTable.Columns.Add("Pet", typeof(string));
             filteredTable.Columns.Add("Serviço", typeof(string));
 
-            // Preencher o DataTable filtrado com os dados
-            foreach (DataRow row in dataTable.Rows)
+            // Filtrar as linhas com base nas condições especificadas
+            var filteredRows = dataTable.AsEnumerable()
+                .Where(row => !row["Proprietario"].ToString().Contains("#") &&
+                              !row["Proprietario"].ToString().Contains("@") &&
+                              !row["Proprietario"].ToString().Contains("&") &&
+                              !row["Proprietario"].ToString().Contains("MERCADO LIVRE") &&
+                              !row["Proprietario"].ToString().Contains("CONSUMIDOR FINAL"));
+
+            // Preencher o DataTable filtrado com os dados filtrados
+            foreach (var row in filteredRows)
             {
                 DataRow newRow = filteredTable.NewRow();
-                newRow["Proprietario"] = row["Proprietario"];
+                newRow["nome"] = row["Proprietario"];
                 // Formatando a data para o formato dd/MM/yyyy
                 newRow["Data"] = Convert.ToDateTime(row["data"]).ToString("dd/MM/yyyy");
                 newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
@@ -133,7 +141,6 @@ namespace CRM
 
             return filteredTable;
         }
-
 
         private void SaveToExcel(DataTable dataTable, string filepath)
         {

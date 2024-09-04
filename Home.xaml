@@ -17,6 +17,7 @@
             <MenuItem x:Name="milteforan" Header="Milteforan" Foreground="White" Click="milteforan_Click" IsEnabled="False"/>
             <MenuItem x:Name="banco" Header="Banco" Foreground="White" Click="BancoMenuItem_Click"/>
             <MenuItem x:Name="relatorio" Header="Relatorio Retorno" Foreground="White" Click="relatorio_Click"/>
+            <MenuItem x:Name="clientesPorProduto" Header="Clientes Por Produto" Foreground="White" Click="clientesPorProduto_Click"/>
 
 
         </Menu>
