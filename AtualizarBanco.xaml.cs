@@ -16,19 +16,11 @@ namespace CRM
         public AtualizarBanco()
         {
             InitializeComponent();
-
-            // Define o contexto da licença EPPlus
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            // Inicializa o dataTable para evitar referências nulas
             dataTable = new DataTable();
-
-            // Inicializa o helper do banco de dados
             dbHelper = new conexaoMouraBanco();
-
-            // Define as datas predefinidas
-            dataInicial.SelectedDate = DateTime.Now.AddMonths(-6).AddDays(-1); // 6 meses e 1 dia atrás
-            dateFinal.SelectedDate = DateTime.Now.AddDays(-1); // Data de ontem
+            dataInicial.SelectedDate = DateTime.Now.AddMonths(-6).AddDays(-1); 
+            dateFinal.SelectedDate = DateTime.Now.AddDays(-1);
         }
 
         private async void btnSearch_Click(object sender, RoutedEventArgs e)
@@ -65,7 +57,6 @@ namespace CRM
                 {
                     ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Dados");
 
-                    // Escrever DataTable no Excel
                     for (int i = 0; i < dataTable.Columns.Count; i++)
                     {
                         worksheet.Cells[1, i + 1].Value = dataTable.Columns[i].ColumnName;
@@ -87,7 +78,7 @@ namespace CRM
 
                 if (result == MessageBoxResult.OK)
                 {
-                    this.Close(); // Fecha a janela
+                    this.Close();
                 }
             }
             else

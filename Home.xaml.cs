@@ -273,11 +273,9 @@ namespace CRM
 
         private void InicializarContagemRegressiva(int quantidadeContatos)
         {
-            // Definindo o tempo total em segundos
             double totalSegundos = 6 * quantidadeContatos;
             tempoRestante = TimeSpan.FromSeconds(totalSegundos);
 
-            // Inicializa o timer
             timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(1)
@@ -306,19 +304,15 @@ namespace CRM
             int erroCount = 0;
             int totalLinhas = Home.Instance.LinhasParaEnviar.Count;
 
-            // Inicializa a contagem regressiva
             InicializarContagemRegressiva(totalLinhas);
 
-            // Inicializa a ProgressBar
             progressDisparo.IsIndeterminate = false;
             progressDisparo.Maximum = totalLinhas;
             progressDisparo.Value = 0;
 
-            // Limpa o conteúdo anterior e inicializa o contador de progresso
             txtBlockConsole.Inlines.Clear();
             txtBlockConsole.Inlines.Add(new Run($"Iniciando envio... (0/{totalLinhas})") { Foreground = Brushes.Yellow });
 
-            // Rolagem automática
             scrollViewerConsole.ScrollToEnd();
 
             try
@@ -338,11 +332,9 @@ namespace CRM
                         txtBlockConsole.Inlines.Add(new Run($"\nErro: {linha.value.Numero}") { Foreground = Brushes.Red });
                     }
 
-                    // Atualiza o progresso e o contador
                     progressDisparo.Value = linha.index + 1;
                     txtBlockConsole.Inlines.Add(new Run($"\nProgresso: {linha.index + 1}/{totalLinhas}") { Foreground = Brushes.Blue });
 
-                    // Rolagem automática
                     scrollViewerConsole.ScrollToEnd();
 
                     await Task.Delay(500); // Aguarda 0.5 segundo entre envios
@@ -354,7 +346,7 @@ namespace CRM
             }
             finally
             {
-                progressDisparo.IsIndeterminate = false; // Finaliza o progresso indeterminado
+                progressDisparo.IsIndeterminate = false;
                 MessageBox.Show($"Envios concluídos!\n\nSucessos: {sucessoCount}\nErros: {erroCount}",
                                 "Resultado do Envio", MessageBoxButton.OK, MessageBoxImage.Information);
             }

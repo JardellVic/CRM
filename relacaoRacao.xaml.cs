@@ -31,20 +31,17 @@ namespace CRM
             if (string.IsNullOrEmpty(phoneNumber))
                 return phoneNumber;
 
-            // Remove non-numeric characters
             var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
 
-            // Format the string
-            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+            if (digits.Length == 11)
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
             }
-            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            else if (digits.Length == 10)
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
             }
 
-            // If the number doesn't fit the pattern, return as is
             return phoneNumber;
         }
 
@@ -56,7 +53,6 @@ namespace CRM
         var inputFilePath = Path.Combine(desktopPath, "Banco.xlsx");
         var outputFilePath = Path.Combine(desktopPath, "Racao.xlsx");
 
-        // Verifique se o arquivo de saída já existe e exclua-o, se necessário
         if (File.Exists(outputFilePath))
         {
             File.Delete(outputFilePath);
@@ -85,7 +81,6 @@ namespace CRM
                 table.Rows.Add(newRow);
             }
 
-            // Filtrar produtos que começam com "RAÇÃO" ou "RACAO" e clientes sem caracteres especiais
             var recentDate = DateTime.Now.AddMonths(-6);
 
             var filteredRows = table.AsEnumerable()
@@ -98,7 +93,6 @@ namespace CRM
                               (row["Nome_Produto"].ToString().StartsWith("RAÇÃO") || row["Nome_Produto"].ToString().StartsWith("RACAO")))
                 .CopyToDataTable();
 
-            // Calcular a média de dias entre compras por cliente
             var groupedRows = filteredRows.AsEnumerable()
                 .GroupBy(row => row["nome"].ToString())
                 .Select(g =>
@@ -114,7 +108,7 @@ namespace CRM
                         Nome = g.Key,
                         Fone = g.First()["fone"].ToString(),
                         Fone2 = g.First()["fone2"].ToString(),
-                        NomeProduto = g.First()["Nome_Produto"].ToString(), // Obtém o valor de "Nome_Produto"
+                        NomeProduto = g.First()["Nome_Produto"].ToString(),
                         MediaDiasEntreCompras = mediaDias,
                         DataUltimaCompra = dataMax,
                         ProximaCompra = proximaCompra
@@ -123,12 +117,11 @@ namespace CRM
                 .Where(x => x.ProximaCompra.Date == DateTime.Now.AddDays(3).Date)
                 .ToList();
 
-            // Criar DataTable para salvar no Excel
             var resultTable = new DataTable();
             resultTable.Columns.Add("nome", typeof(string));
             resultTable.Columns.Add("fone", typeof(string));
             resultTable.Columns.Add("fone2", typeof(string));
-            resultTable.Columns.Add("Nome_Produto", typeof(string)); // Alterado para "Nome_Produto"
+            resultTable.Columns.Add("Nome_Produto", typeof(string));
             resultTable.Columns.Add("Media Dias Entre Compras", typeof(double));
             resultTable.Columns.Add("Data Última Compra", typeof(DateTime));
             resultTable.Columns.Add("Próxima Compra", typeof(DateTime));
@@ -137,24 +130,20 @@ namespace CRM
                     {
                         var row = resultTable.NewRow();
                         row["nome"] = item.Nome;
-                        row["fone"] = FormatPhoneNumber(item.Fone);      // Formatação aplicada aqui
-                        row["fone2"] = FormatPhoneNumber(item.Fone2);    // Formatação aplicada aqui
-                        row["Nome_Produto"] = item.NomeProduto;          // Usando o valor de "Nome_Produto"
+                        row["fone"] = FormatPhoneNumber(item.Fone);
+                        row["fone2"] = FormatPhoneNumber(item.Fone2);
+                        row["Nome_Produto"] = item.NomeProduto;
                         row["Media Dias Entre Compras"] = item.MediaDiasEntreCompras;
                         row["Data Última Compra"] = item.DataUltimaCompra;
                         row["Próxima Compra"] = item.ProximaCompra;
                         resultTable.Rows.Add(row);
                     }
 
-
-
-                    // Salvar os resultados em um novo arquivo Excel
                     using (var newPackage = new ExcelPackage(new FileInfo(outputFilePath)))
             {
                 var newWorksheet = newPackage.Workbook.Worksheets.Add("Resultado");
                 newWorksheet.Cells["A1"].LoadFromDataTable(resultTable, true);
 
-                // Aplicar formatação para as colunas de data
                 var dataUltimaCompraCol = newWorksheet.Cells[2, resultTable.Columns["Data Última Compra"].Ordinal + 1, resultTable.Rows.Count + 1, resultTable.Columns["Data Última Compra"].Ordinal + 1];
                 var proximaCompraCol = newWorksheet.Cells[2, resultTable.Columns["Próxima Compra"].Ordinal + 1, resultTable.Rows.Count + 1, resultTable.Columns["Próxima Compra"].Ordinal + 1];
 

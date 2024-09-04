@@ -27,22 +27,15 @@ namespace CRM
             {
                 try
                 {
-                    // Obtém o caminho da área de trabalho do usuário
                     var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
-                    // Caminho dos arquivos na área de trabalho
                     var inputFilePath = System.IO.Path.Combine(desktopPath, "Banco.xlsx");
                     var outputFilePath = System.IO.Path.Combine(desktopPath, "Suplemento.xlsx");
-
-                    // Carregar o arquivo Excel
                     var workbook = new XLWorkbook(inputFilePath);
                     var worksheet = workbook.Worksheet(1);
                     var dataTable = worksheet.RangeUsed().AsTable().AsNativeDataTable();
 
-                    // Adicionar a coluna "Grupo" ao DataTable
                     dataTable.Columns.Add("Grupo", typeof(int));
 
-                    // Filtrar registros com caracteres indesejados
                     var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
                     var pattern = string.Join("|", caracteresIndesejados.Select(System.Text.RegularExpressions.Regex.Escape));
 
@@ -50,12 +43,9 @@ namespace CRM
                         .Where(row => !System.Text.RegularExpressions.Regex.IsMatch(row.Field<string>("nome"), pattern))
                         .ToList();
 
-
-                    // Data atual
                     var dataAtual = DateTime.Today;
                     var isSegundaFeira = dataAtual.DayOfWeek == DayOfWeek.Monday;
 
-                    // Definir grupos de dias e produtos
                     var gruposProdutos = new Dictionary<int, List<int>>
                         {
                             { 19, new List<int> { 46050, 44229 } },
@@ -64,10 +54,8 @@ namespace CRM
                             { 59, new List<int> { 44273, 774, 780, 49677, 51350, 43548, 49580, 44921 } },
                         };
 
-                    // Lista para armazenar todos os resultados
                     var resultadosCompletos = new List<DataRow>();
 
-                    // Filtrar os produtos por grupos de dias
                     foreach (var grupo in gruposProdutos)
                     {
                         var dias = grupo.Key;
@@ -87,14 +75,12 @@ namespace CRM
 
                         foreach (var dataFiltro in datasFiltro)
                         {
-                            // Filtragem das linhas
                             var dfFiltrado = filteredRows
                                 .Where(row =>
                                 {
                                     var produto = row.Field<object>("Produto");
                                     int produtoInt;
 
-                                    // Tentar converter para int, se falhar, usar um valor padrão ou pular a linha
                                     if (produto != null && int.TryParse(produto.ToString(), out produtoInt))
                                     {
                                         return row.Field<string>("Data da Venda") == dataFiltro &&
@@ -114,7 +100,6 @@ namespace CRM
 
                         }
 
-                        // Criar uma nova DataTable apenas com as colunas desejadas
                         var resultadosFiltradosDataTable = new DataTable();
                         resultadosFiltradosDataTable.Columns.Add("nome", typeof(string));
                         resultadosFiltradosDataTable.Columns.Add("fone", typeof(string));
@@ -123,7 +108,6 @@ namespace CRM
                         resultadosFiltradosDataTable.Columns.Add("Data da Venda", typeof(string));
                         resultadosFiltradosDataTable.Columns.Add("Grupo", typeof(int));
 
-                        // Copiar as linhas filtradas para a nova DataTable
                         foreach (var row in resultadosCompletos)
                         {
                             var newRow = resultadosFiltradosDataTable.NewRow();
@@ -164,20 +148,17 @@ namespace CRM
             if (string.IsNullOrEmpty(phoneNumber))
                 return phoneNumber;
 
-            // Remove non-numeric characters
             var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
 
-            // Format the string
-            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+            if (digits.Length == 11)
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
             }
-            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            else if (digits.Length == 10)
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
             }
 
-            // If the number doesn't fit the pattern, return as is
             return phoneNumber;
         }
 

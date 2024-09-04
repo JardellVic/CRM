@@ -47,7 +47,7 @@ namespace CRM
             {
                 if (i == foneColumnIndex)
                 {
-                    ColunaNumeroSelecionada = columnNames[i]; // Define a coluna "Número"
+                    ColunaNumeroSelecionada = columnNames[i];
                     continue;
                 }
 
@@ -56,8 +56,8 @@ namespace CRM
                     Margin = new Thickness(5)
                 };
 
-                grid.ColumnDefinitions.Add(new ColumnDefinition()); // Para o label da coluna
-                grid.ColumnDefinitions.Add(new ColumnDefinition()); // Para o RadioButton "Número"
+                grid.ColumnDefinitions.Add(new ColumnDefinition()); 
+                grid.ColumnDefinitions.Add(new ColumnDefinition());
 
                 for (int j = 0; j < paramsCount; j++)
                 {
@@ -132,7 +132,7 @@ namespace CRM
                         else if (radioButton.Content.ToString().StartsWith("Var"))
                         {
                             int varIndex = int.Parse(radioButton.Content.ToString().Substring(3)) - 1;
-                            selectedVariables[varIndex] = columnName; // Mapeia o índice da variável para a coluna
+                            selectedVariables[varIndex] = columnName;
                         }
                         break;
                     }

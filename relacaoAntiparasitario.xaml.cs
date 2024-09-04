@@ -35,11 +35,9 @@ namespace CRM
                     var worksheet = workbook.Worksheet(1);
                     var dataTable = worksheet.RangeUsed().AsTable().AsNativeDataTable();
 
-                    // Adicionar a coluna "Grupo" e "DataFiltro" à tabela
                     dataTable.Columns.Add("Grupo", typeof(int));
                     dataTable.Columns.Add("DataFiltro", typeof(string));
 
-                    // Filtrar registros com caracteres indesejados
                     var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
                     var pattern = string.Join("|", caracteresIndesejados.Select(Regex.Escape));
 
@@ -97,7 +95,6 @@ namespace CRM
 
                         foreach (var dataFiltro in datasFiltro)
                         {
-                            // Filtragem das linhas
                             var dfFiltrado = filteredRows
                                 .Where(row =>
                                 {
@@ -157,20 +154,18 @@ namespace CRM
             if (string.IsNullOrEmpty(phoneNumber))
                 return phoneNumber;
 
-            // Remove non-numeric characters
             var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
 
-            // Format the string
-            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+
+            if (digits.Length == 11) 
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
             }
-            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            else if (digits.Length == 10) 
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
             }
 
-            // If the number doesn't fit the pattern, return as is
             return phoneNumber;
         }
     }

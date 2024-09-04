@@ -34,10 +34,8 @@ namespace CRM
         {
             try
             {
-                // Converter a data de acordo com o formato dd/MM/yyyy
                 DateTime startDate = DateTime.ParseExact(txtDataInicial.Text, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).Date;
-                //DateTime endDate = DateTime.Now.AddDays(-1).Date.AddSeconds(-1);
-                DateTime endDate = startDate.AddDays(1).AddSeconds(-1); // Fim do dia
+                DateTime endDate = startDate.AddDays(1).AddSeconds(-1);
 
                 progressBar.Visibility = Visibility.Visible;
                 progressBar.IsIndeterminate = true;
@@ -81,25 +79,19 @@ namespace CRM
             }
             else
             {
-                // Caso o caminho do diretório seja nulo, exibe uma mensagem de erro
                 MessageBox.Show("Não foi possível determinar o caminho do diretório para salvar o arquivo.", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            // Filtra as colunas desejadas
             DataTable filteredTable = FilterColumns(_dataTable);
 
-            // Exibe a barra de progresso e define como indeterminada
             progressBar.Visibility = Visibility.Visible;
             progressBar.IsIndeterminate = true;
 
-            // Executa a operação de salvamento em uma tarefa separada
             await Task.Run(() => SaveToExcel(filteredTable, outputPath));
 
-            // Oculta a barra de progresso
             progressBar.Visibility = Visibility.Collapsed;
 
-            // Exibe uma mensagem de sucesso e fecha a janela
             MessageBox.Show($"Arquivo salvo em {outputPath}!", "Concluído", MessageBoxButton.OK);
             this.Close();
         }
@@ -114,13 +106,11 @@ namespace CRM
         {
             DataTable filteredTable = new DataTable();
 
-            // Adicionar as colunas específicas
             filteredTable.Columns.Add("nome", typeof(string));
             filteredTable.Columns.Add("Data_Cadastro", typeof(DateTime));
             filteredTable.Columns.Add("fone", typeof(string));
             filteredTable.Columns.Add("fone2", typeof(string));
 
-            // Filtrar as linhas com base nos critérios especificados
             var filteredRows = dataTable.AsEnumerable()
                 .Where(row => !row["Nome"].ToString().Contains("#") &&
                               !row["Nome"].ToString().Contains("@") &&
@@ -128,7 +118,7 @@ namespace CRM
                               !row["Nome"].ToString().Contains("MERCADO LIVRE") &&
                               !row["Nome"].ToString().Contains("CONSUMIDOR FINAL"));
 
-            // Preencher o DataTable filtrado com os dados
+
             foreach (var row in filteredRows)
             {
                 DataRow newRow = filteredTable.NewRow();
@@ -148,20 +138,17 @@ namespace CRM
             if (string.IsNullOrEmpty(phoneNumber))
                 return phoneNumber;
 
-            // Remove non-numeric characters
             var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
 
-            // Format the string
-            if (digits.Length == 11) // Format as +55 xx xxxxx-xxxx
+            if (digits.Length == 11)
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
             }
-            else if (digits.Length == 10) // Format as +55 xx xxxx-xxxx
+            else if (digits.Length == 10)
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
             }
 
-            // If the number doesn't fit the pattern, return as is
             return phoneNumber;
         }
 
@@ -172,11 +159,9 @@ namespace CRM
                 var worksheet = package.Workbook.Worksheets.Add("Dados");
                 worksheet.Cells["A1"].LoadFromDataTable(dataTable, true);
 
-                // Formata a coluna de Data_Cadastro no formato dd/MM/yyyy
                 var dataCadastroColumn = worksheet.Cells["B2:B" + (dataTable.Rows.Count + 1)];
                 dataCadastroColumn.Style.Numberformat.Format = "dd/MM/yyyy";
 
-                // Ajusta o comprimento das colunas
                 worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
                 package.SaveAs(new FileInfo(filepath));

@@ -20,7 +20,7 @@ namespace CRM
             dataFinal.SelectedDateChanged += OnDateSelected;
             txtProduto.TextChanged += OnTextChanged;
             btnSearch.Click += OnSearchClick;
-            btnExportarExcel.Click += OnExportarExcelClick; // Adicione este evento
+            btnExportarExcel.Click += OnExportarExcelClick;
         }
 
         private void OnDateSelected(object sender, SelectionChangedEventArgs e)
@@ -75,7 +75,6 @@ namespace CRM
                 return;
             }
 
-            // Criar a pasta 'Relações' no desktop se não existir
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             string relacoesPath = Path.Combine(desktopPath, "Relações");
             if (!Directory.Exists(relacoesPath))
@@ -83,19 +82,15 @@ namespace CRM
                 Directory.CreateDirectory(relacoesPath);
             }
 
-            // Caminho completo do arquivo
             string filePath = Path.Combine(relacoesPath, "RelatorioClientesPromo.xlsx");
 
-            // Criar o arquivo Excel
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Clientes");
                 var dataTable = (DataView)listaProd.ItemsSource;
 
-                // Adicionar os dados da DataTable à planilha
                 worksheet.Cell(1, 1).InsertTable(dataTable.ToTable(), "Clientes");
 
-                // Salvar o arquivo
                 workbook.SaveAs(filePath);
             }
 

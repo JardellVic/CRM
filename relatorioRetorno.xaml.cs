@@ -70,7 +70,7 @@ namespace CRM
             DateTime startDate = dataInicial.SelectedDate.Value;
             DateTime endDate = dateFinal.SelectedDate.Value;
 
-            progressBar.IsIndeterminate = true; // Ativa a barra de progresso indeterminada
+            progressBar.IsIndeterminate = true;
 
             try
             {
@@ -91,7 +91,7 @@ namespace CRM
             }
             finally
             {
-                progressBar.IsIndeterminate = false; // Desativa a barra de progresso indeterminada
+                progressBar.IsIndeterminate = false;
             }
         }
 
@@ -105,7 +105,7 @@ namespace CRM
 
             try
             {
-                progressBar.IsIndeterminate = true; // Ativa a barra de progresso indeterminada
+                progressBar.IsIndeterminate = true;
 
                 await Task.Run(() =>
                 {
@@ -113,7 +113,6 @@ namespace CRM
                     {
                         var worksheet = package.Workbook.Worksheets.Add("Relatório");
 
-                        // Adicionar cabeçalhos
                         worksheet.Cells[1, 1].Value = "Código da Venda";
                         worksheet.Cells[1, 2].Value = "Nome";
                         worksheet.Cells[1, 3].Value = "Telefone";
@@ -130,7 +129,7 @@ namespace CRM
                         foreach (DataRow dataRow in _dataTable.Rows)
                         {
                             worksheet.Cells[row, 1].Value = dataRow["Código da Venda"];
-                            worksheet.Cells[row, 2].Value = dataRow["Nome"]; // Certifique-se de que "Nome" seja o nome correto da coluna
+                            worksheet.Cells[row, 2].Value = dataRow["Nome"];
                             worksheet.Cells[row, 3].Value = dataRow["fone"];
                             worksheet.Cells[row, 4].Value = dataRow["fone2"];
                             worksheet.Cells[row, 5].Value = dataRow["Produto"];
@@ -159,7 +158,7 @@ namespace CRM
             }
             finally
             {
-                progressBar.IsIndeterminate = false; // Desativa a barra de progresso indeterminada
+                progressBar.IsIndeterminate = false;
             }
         }
     }
