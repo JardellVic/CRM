@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.IO;
 
 namespace CRM
 {
@@ -113,39 +114,34 @@ namespace CRM
                     {
                         var worksheet = package.Workbook.Worksheets.Add("Relatório");
 
-                        worksheet.Cells[1, 1].Value = "Código da Venda";
-                        worksheet.Cells[1, 2].Value = "Nome";
-                        worksheet.Cells[1, 3].Value = "Telefone";
-                        worksheet.Cells[1, 4].Value = "Telefone 2";
-                        worksheet.Cells[1, 5].Value = "Produto";
-                        worksheet.Cells[1, 6].Value = "Nome do Produto";
-                        worksheet.Cells[1, 7].Value = "Data da Venda";
-                        worksheet.Cells[1, 8].Value = "Quantidade do Item";
-                        worksheet.Cells[1, 9].Value = "Valor Total do Item";
-                        worksheet.Cells[1, 10].Value = "Empresa";
-                        worksheet.Cells[1, 11].Value = "Vendedor";
+                        worksheet.Cells[1, 1].Value = "Cliente";
+                        worksheet.Cells[1, 2].Value = "Produto";
+                        worksheet.Cells[1, 3].Value = "Nome do Produto";
+                        worksheet.Cells[1, 4].Value = "Data da Venda";
+                        worksheet.Cells[1, 5].Value = "Vendedor";
 
                         int row = 2;
                         foreach (DataRow dataRow in _dataTable.Rows)
                         {
-                            worksheet.Cells[row, 1].Value = dataRow["Código da Venda"];
-                            worksheet.Cells[row, 2].Value = dataRow["Nome"];
-                            worksheet.Cells[row, 3].Value = dataRow["fone"];
-                            worksheet.Cells[row, 4].Value = dataRow["fone2"];
-                            worksheet.Cells[row, 5].Value = dataRow["Produto"];
-                            worksheet.Cells[row, 6].Value = dataRow["Nome_Produto"];
-                            worksheet.Cells[row, 7].Value = dataRow["Data da Venda"];
-                            worksheet.Cells[row, 8].Value = dataRow["Quantidade do Item"];
-                            worksheet.Cells[row, 9].Value = dataRow["Valor Total do Item"];
-                            worksheet.Cells[row, 10].Value = dataRow["Empresa"];
-                            worksheet.Cells[row, 11].Value = dataRow["Vendedor"];
+                            worksheet.Cells[row, 1].Value = dataRow["nome"];
+                            worksheet.Cells[row, 2].Value = dataRow["Produto"];
+                            worksheet.Cells[row, 3].Value = dataRow["Nome_Produto"];
+                            worksheet.Cells[row, 4].Value = dataRow["Data da Venda"];
+                            worksheet.Cells[row, 5].Value = dataRow["Vendedor"];
                             row++;
                         }
 
 
                         worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
-                        string filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Relatorio.xlsx");
+                        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                        string relacoesPath = Path.Combine(desktopPath, "Relações");
+                        if (!Directory.Exists(relacoesPath))
+                        {
+                            Directory.CreateDirectory(relacoesPath);
+                        }
+
+                        string filePath = Path.Combine(relacoesPath, "Relatorio Retorno.xlsx");
                         package.SaveAs(new System.IO.FileInfo(filePath));
 
                         Dispatcher.Invoke(() => MessageBox.Show($"Os dados foram exportados com sucesso para {filePath}.", "Exportação Concluída", MessageBoxButton.OK, MessageBoxImage.Information));

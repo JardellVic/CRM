@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using System.Data;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,7 +30,12 @@ namespace CRM
                 {
                     var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                     var inputFilePath = System.IO.Path.Combine(desktopPath, "Banco.xlsx");
-                    var outputFilePath = System.IO.Path.Combine(desktopPath, "Suplemento.xlsx");
+                    string relacoesPath = Path.Combine(desktopPath, "Relações");
+                    if (!Directory.Exists(relacoesPath))
+                    {
+                        Directory.CreateDirectory(relacoesPath);
+                    }
+                    var outputFilePath = System.IO.Path.Combine(relacoesPath, "Suplemento.xlsx");
                     var workbook = new XLWorkbook(inputFilePath);
                     var worksheet = workbook.Worksheet(1);
                     var dataTable = worksheet.RangeUsed().AsTable().AsNativeDataTable();

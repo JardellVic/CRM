@@ -10,27 +10,30 @@ using OfficeOpenXml;
 using Newtonsoft.Json.Linq;
 using CRM.conexao.API;
 using System.Windows.Threading;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace CRM
 {
     public class LineData
     {
-        public string Numero { get; set; }
-        public string Nome { get; set; }
-        public List<string> Variaveis { get; set; }
+        public string Numero { get; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
+        public List<string> Variaveis { get; set; } = [];
     }
 
     public partial class Home : Window
     {
-        public static Home Instance { get; private set; }
-        public string TemplateIdSelecionado { get; set; }
+        public static Home Instance { get; private set; } = new Home();
+        public string TemplateIdSelecionado { get; set; } = string.Empty;
+        public List<LineData> LinhasParaEnviar { get; private set; } = [];
 
         private readonly APIManager apiManager;
         private readonly HttpClient client;
-        private Dictionary<string, string> templateTextMap;
-        private Dictionary<string, int> templateParamsMap;
-        private Dictionary<string, string> templateIdMap;
-        private DispatcherTimer timer;
+        private readonly Dictionary<string, string> templateTextMap;
+        private readonly Dictionary<string, int> templateParamsMap;
+        private readonly Dictionary<string, string> templateIdMap;
+        private DispatcherTimer timer = new();
         private TimeSpan tempoRestante;
 
         #region //API PLANETFONE
@@ -40,9 +43,9 @@ namespace CRM
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             apiManager = new APIManager();
             client = new HttpClient();
-            templateTextMap = new Dictionary<string, string>();
-            templateParamsMap = new Dictionary<string, int>();
-            templateIdMap = new Dictionary<string, string>();
+            templateTextMap = [];
+            templateParamsMap = [];
+            templateIdMap = [];
             LoadTemplatesAsync();
             cmbTemplates.SelectionChanged += CmbTemplates_SelectionChanged;
             Instance = this;
@@ -91,7 +94,7 @@ namespace CRM
         {
             if (cmbTemplates.SelectedItem != null)
             {
-                string selectedTemplate = cmbTemplates.SelectedItem.ToString();
+                string selectedTemplate = cmbTemplates.SelectedItem?.ToString() ?? string.Empty;
                 if (templateTextMap.ContainsKey(selectedTemplate))
                 {
                     txtTemplate.Text = templateTextMap[selectedTemplate];
@@ -103,9 +106,9 @@ namespace CRM
             }
         }
 
-        private async void SelectFileButton_Click(object sender, RoutedEventArgs e)
+        private void SelectFileButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            OpenFileDialog openFileDialog = new()
             {
                 Filter = "Excel Files (*.xlsx)|*.xlsx|All Files (*.*)|*.*"
             };
@@ -116,7 +119,7 @@ namespace CRM
 
                 if (cmbTemplates.SelectedItem != null)
                 {
-                    string selectedTemplate = cmbTemplates.SelectedItem.ToString();
+                    string selectedTemplate = cmbTemplates.SelectedItem?.ToString() ?? string.Empty;
                     int paramsCount = GetParamsCountForTemplate(selectedTemplate);
 
                     if (GetColumnCountFromExcel(openFileDialog.FileName) < paramsCount + 1)
@@ -130,12 +133,12 @@ namespace CRM
             }
         }
 
-        private void ShowError(string message)
+        private static void ShowError(string message)
         {
             MessageBox.Show(message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private List<string> GetColumnNamesFromExcel(string filePath)
+        private static List<string> GetColumnNamesFromExcel(string filePath)
         {
             var columnNames = new List<string>();
             using (var package = new ExcelPackage(new FileInfo(filePath)))
@@ -149,27 +152,25 @@ namespace CRM
             return columnNames;
         }
 
-        private List<List<string>> GetRowDataFromExcel(string filePath)
+        private static List<List<string>> GetRowDataFromExcel(string filePath)
         {
             var rowData = new List<List<string>>();
 
             try
             {
-                using (var package = new ExcelPackage(new FileInfo(filePath)))
+                using var package = new ExcelPackage(new FileInfo(filePath));
+                var worksheet = package.Workbook.Worksheets[0];
+
+                for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
                 {
-                    var worksheet = package.Workbook.Worksheets[0];
+                    var rowValues = new List<string>();
 
-                    for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+                    for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
                     {
-                        var rowValues = new List<string>();
-
-                        for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
-                        {
-                            rowValues.Add(worksheet.Cells[row, col].Text);
-                        }
-
-                        rowData.Add(rowValues);
+                        rowValues.Add(worksheet.Cells[row, col].Text);
                     }
+
+                    rowData.Add(rowValues);
                 }
             }
             catch (IOException ioEx)
@@ -192,7 +193,7 @@ namespace CRM
             int quantidadeContatos = rowData.Count;
             AtualizarStatusBar(quantidadeContatos);
 
-            MappingWindow mappingWindow = new MappingWindow(paramsCount, columnNames, rowData);
+            MappingWindow mappingWindow = new(paramsCount, columnNames, rowData);
             mappingWindow.ShowDialog();
 
             if (!string.IsNullOrEmpty(mappingWindow.ColunaNumeroSelecionada) &&
@@ -202,7 +203,7 @@ namespace CRM
             }
         }
 
-        public List<LineData> LinhasParaEnviar { get; private set; }
+        
 
         private void ProcessRowData(string colunaNumero, string colunaNome, string variaveisColuna, List<List<string>> rowData)
         {
@@ -262,13 +263,11 @@ namespace CRM
             return templateParamsMap.ContainsKey(templateName) ? templateParamsMap[templateName] : 0;
         }
 
-        private int GetColumnCountFromExcel(string filePath)
+        private static int GetColumnCountFromExcel(string filePath)
         {
-            using (var package = new ExcelPackage(new FileInfo(filePath)))
-            {
-                var worksheet = package.Workbook.Worksheets[0];
-                return worksheet.Dimension.End.Column;
-            }
+            using var package = new ExcelPackage(new FileInfo(filePath));
+            var worksheet = package.Workbook.Worksheets[0];
+            return worksheet.Dimension.End.Column;
         }
 
         private void InicializarContagemRegressiva(int quantidadeContatos)
@@ -280,16 +279,23 @@ namespace CRM
             {
                 Interval = TimeSpan.FromSeconds(1)
             };
+            #pragma warning disable CS8622
             timer.Tick += Timer_Tick;
+            #pragma warning restore CS8622
             timer.Start();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            if (sender == null)
+            {
+                
+                return;
+            }
             if (tempoRestante.TotalSeconds > 0)
             {
                 tempoRestante = tempoRestante.Subtract(TimeSpan.FromSeconds(1));
-                statusTempo.Content = $"Tempo Restante: {tempoRestante.ToString(@"hh\:mm\:ss")}";
+                statusTempo.Content = $"Tempo Restante: {tempoRestante:hh\\:mm\\:ss}";
             }
             else
             {
@@ -404,33 +410,44 @@ namespace CRM
             try
             {
                 var formData = new MultipartFormDataContent
-                {
-                    { new StringContent("a86664b9-95de-4fd2-bc68-3b1e689d0a0f"), "app_id" },
-                    { new StringContent(numero), "numero" },
-                    { new StringContent("true"), "optin" }
-                };
+        {
+            { new StringContent("a86664b9-95de-4fd2-bc68-3b1e689d0a0f"), "app_id" },
+            { new StringContent(numero), "numero" },
+            { new StringContent("true"), "optin" }
+        };
 
                 HttpResponseMessage response = await client.PostAsync("http://whatsapp.petcaesecia.com.br/api/v1/wpp/alterarStatusOptinNumero?key=856adfb59d45471ab288e45d3e4d9a7865f9c075cc142", formData);
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 JObject jsonResponse = JObject.Parse(responseBody);
-                string status = (string)jsonResponse["status"];
-                string msg = (string)jsonResponse["data"]["msg"];
 
-                // Checa se o status é "success" e a mensagem é a esperada
-                return status == "success" && msg.Contains("A solicitação foi feita com sucesso");
+                // Verificar nulidade e valor de 'status'
+                string? status = jsonResponse["status"]?.ToString();
+                if (status != "success")
+                {
+                    return false;
+                }
+
+                // Verificar nulidade e valor de 'msg'
+                string? msg = jsonResponse["data"]?["msg"]?.ToString();
+                if (msg == null || !msg.Contains("A solicitação foi feita com sucesso"))
+                {
+                    return false;
+                }
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Em caso de erro, podemos retornar false ou lidar com a exceção conforme necessário
                 return false;
             }
         }
+
+
         #endregion 
         #region // lISTAS 
         private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            AtualizarBanco atualizarBancoPage = new AtualizarBanco();
+            AtualizarBanco atualizarBancoPage = new();
             atualizarBancoPage.Show();
         }
 

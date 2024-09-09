@@ -51,7 +51,12 @@ namespace CRM
     {
         var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         var inputFilePath = Path.Combine(desktopPath, "Banco.xlsx");
-        var outputFilePath = Path.Combine(desktopPath, "Racao.xlsx");
+                string relacoesPath = Path.Combine(desktopPath, "Relações");
+                if (!Directory.Exists(relacoesPath))
+                {
+                    Directory.CreateDirectory(relacoesPath);
+                }
+                var outputFilePath = Path.Combine(relacoesPath, "Racao.xlsx");
 
         if (File.Exists(outputFilePath))
         {

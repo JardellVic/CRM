@@ -11,7 +11,7 @@ namespace CRM
     public partial class AtualizarBanco : Window
     {
         private DataTable dataTable;
-        private conexaoMouraBanco dbHelper;
+        private readonly conexaoMouraBanco dbHelper;
 
         public AtualizarBanco()
         {
@@ -53,7 +53,7 @@ namespace CRM
                 string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 string filePath = Path.Combine(desktopPath, "Banco.xlsx");
 
-                using (ExcelPackage package = new ExcelPackage())
+                using (ExcelPackage package = new())
                 {
                     ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Dados");
 
@@ -70,7 +70,7 @@ namespace CRM
                         }
                     }
 
-                    FileInfo fileInfo = new FileInfo(filePath);
+                    FileInfo fileInfo = new(filePath);
                     package.SaveAs(fileInfo);
                 }
 

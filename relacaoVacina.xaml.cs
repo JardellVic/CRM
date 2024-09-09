@@ -85,7 +85,12 @@ namespace CRM
                 return;
             }
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string outputPath = Path.Combine(desktopPath, "Vacina.xlsx");
+            string relacoesPath = Path.Combine(desktopPath, "Relações");
+            if (!Directory.Exists(relacoesPath))
+            {
+                Directory.CreateDirectory(relacoesPath);
+            }
+            string outputPath = Path.Combine(relacoesPath, "Vacina.xlsx");
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
             // Filtrar as colunas desejadas

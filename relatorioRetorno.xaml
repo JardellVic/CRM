@@ -15,7 +15,7 @@
         <Button x:Name="btnSearch" Content="Pesquisar" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,410,0,0" Width="200" Background="#FF414141" Foreground="White" Click="btnSearch_Click"/>
         <Button x:Name="btnExportarExcel" Content="Exportar para Excel" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,435,0,0" Width="200" Background="#FF414141" Foreground="White" Click="btnExportarExcel_Click"/>
         <ProgressBar x:Name="progressBar" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,460,0,0" Height="5" Background="White" Foreground="Red" Width="200"/>
-        <Label Content="Clientes" HorizontalAlignment="Center" Margin="0,124,0,0" VerticalAlignment="Top" Foreground="White"/>
+        <Label Content="Propriedades" HorizontalAlignment="Center" Margin="0,124,0,0" VerticalAlignment="Top" Foreground="White"/>
         <TextBox x:Name="txtClientes" HorizontalAlignment="Center" Margin="0,150,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" KeyDown="txtClientes_KeyDown"/>
         <ListView x:Name="lstClientes" HorizontalAlignment="Center" Margin="0,173,0,72" RenderTransformOrigin="0.5,0.5" Width="200">
             <ListView.RenderTransform>
@@ -28,7 +28,7 @@
             </ListView.RenderTransform>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Código do Cliente" DisplayMemberBinding="{Binding}" Width="Auto"/>
+                    <GridViewColumn Header="Código do Vendedor" DisplayMemberBinding="{Binding}" Width="Auto"/>
                 </GridView>
             </ListView.View>
         </ListView>

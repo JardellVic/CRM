@@ -70,8 +70,15 @@ namespace CRM
             }
            
             string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string outputPath = Path.Combine(desktopPath, "Welcome.xlsx");
+            string relacoesPath = Path.Combine(desktopPath, "Relações");
+            if (!Directory.Exists(relacoesPath))
+            {
+                Directory.CreateDirectory(relacoesPath);
+            }
+            string outputPath = Path.Combine(relacoesPath, "Welcome.xlsx");
             string? directoryPath = Path.GetDirectoryName(outputPath);
+
+
 
             if (directoryPath != null)
             {

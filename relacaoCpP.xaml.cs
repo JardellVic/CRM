@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace CRM
 {
@@ -67,6 +68,25 @@ namespace CRM
             }
         }
 
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
+
+            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
+
+            if (digits.Length == 11)
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
+            }
+            else if (digits.Length == 10)
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
+            }
+
+            return phoneNumber;
+        }
+
         private void OnExportarExcelClick(object sender, RoutedEventArgs e)
         {
             if (listaProd.ItemsSource == null)
@@ -87,14 +107,31 @@ namespace CRM
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Clientes");
-                var dataTable = (DataView)listaProd.ItemsSource;
+                var dataView = (DataView)listaProd.ItemsSource;
+                var dataTable = dataView.ToTable();
 
-                worksheet.Cell(1, 1).InsertTable(dataTable.ToTable(), "Clientes");
+                // Aplicar a formatação nos números de telefone (fone e fone2)
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    if (dataTable.Columns.Contains("fone"))
+                    {
+                        row["fone"] = FormatPhoneNumber(row["fone"].ToString());
+                    }
+
+                    if (dataTable.Columns.Contains("fone2"))
+                    {
+                        row["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
+                    }
+                }
+
+                // Inserir os dados formatados na planilha
+                worksheet.Cell(1, 1).InsertTable(dataTable, "Clientes");
 
                 workbook.SaveAs(filePath);
             }
 
             MessageBox.Show("Arquivo exportado com sucesso!", "Exportar Excel", MessageBoxButton.OK, MessageBoxImage.Information);
         }
+
     }
 }
