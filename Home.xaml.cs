@@ -384,7 +384,7 @@ namespace CRM
                     { new StringContent("Inicio"), "menu_bot" }
                 };
 
-                HttpResponseMessage response = await client.PostAsync("http://18.230.12.44/api/v1/wpp/enviarTemplate?key=856adfb59d45471ab288e45d3e4d9a7865f9c075cc142", formData);
+                HttpResponseMessage response = await client.PostAsync("*****************************", formData);
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -416,7 +416,7 @@ namespace CRM
             { new StringContent("true"), "optin" }
         };
 
-                HttpResponseMessage response = await client.PostAsync("http://whatsapp.petcaesecia.com.br/api/v1/wpp/alterarStatusOptinNumero?key=856adfb59d45471ab288e45d3e4d9a7865f9c075cc142", formData);
+                HttpResponseMessage response = await client.PostAsync("***************************", formData);
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 JObject jsonResponse = JObject.Parse(responseBody);
