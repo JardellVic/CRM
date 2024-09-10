@@ -24,6 +24,8 @@ namespace CRM
 
     public partial class Home : Window
     {
+        #region Properties
+        string desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Relações");
         public static Home Instance { get; private set; } = new Home();
         public string TemplateIdSelecionado { get; set; } = string.Empty;
         public List<LineData> LinhasParaEnviar { get; private set; } = [];
@@ -36,7 +38,9 @@ namespace CRM
         private DispatcherTimer timer = new();
         private TimeSpan tempoRestante;
 
-        #region //API PLANETFONE
+        #endregion
+
+        #region API PLANETFONE
         public Home()
         {
             InitializeComponent();
@@ -203,8 +207,6 @@ namespace CRM
             }
         }
 
-        
-
         private void ProcessRowData(string colunaNumero, string colunaNome, string variaveisColuna, List<List<string>> rowData)
         {
             var linhas = new List<LineData>();
@@ -362,7 +364,7 @@ namespace CRM
         {
             try
             {
-                bool optinResult = await OptinNumeroAsync(linha.Numero);
+                bool optinResult = await apiManager.OptinNumeroAsync(linha.Numero);
 
                 if (optinResult)
                 {
@@ -374,20 +376,9 @@ namespace CRM
                     return false;
                 }
 
-                var formData = new MultipartFormDataContent
-                {
-                    { new StringContent(TemplateIdSelecionado), "template_id" },
-                    { new StringContent(linha.Numero), "numero" },
-                    { new StringContent(linha.Nome), "nome_cliente" },
-                    { new StringContent("[" + string.Join(",", linha.Variaveis.Select(v => $"\"{v}\"")) + "]"), "variaveis" },
-                    { new StringContent("Pet"), "bot" },
-                    { new StringContent("Inicio"), "menu_bot" }
-                };
+                bool sendResult = await apiManager.EnviarLinhaAsync(TemplateIdSelecionado, linha.Numero, linha.Nome, linha.Variaveis);
 
-                HttpResponseMessage response = await client.PostAsync("http://18.230.12.44/api/v1/wpp/enviarTemplate?key=856adfb59d45471ab288e45d3e4d9a7865f9c075cc142", formData);
-                string responseBody = await response.Content.ReadAsStringAsync();
-
-                if (response.IsSuccessStatusCode)
+                if (sendResult)
                 {
                     txtBlockConsole.Inlines.Add(new Run($"\nSucesso: {linha.Numero}") { Foreground = Brushes.Green });
                     return true;
@@ -409,32 +400,9 @@ namespace CRM
         {
             try
             {
-                var formData = new MultipartFormDataContent
-        {
-            { new StringContent("a86664b9-95de-4fd2-bc68-3b1e689d0a0f"), "app_id" },
-            { new StringContent(numero), "numero" },
-            { new StringContent("true"), "optin" }
-        };
+                bool result = await apiManager.OptinNumeroAsync(numero);
 
-                HttpResponseMessage response = await client.PostAsync("http://whatsapp.petcaesecia.com.br/api/v1/wpp/alterarStatusOptinNumero?key=856adfb59d45471ab288e45d3e4d9a7865f9c075cc142", formData);
-                string responseBody = await response.Content.ReadAsStringAsync();
-
-                JObject jsonResponse = JObject.Parse(responseBody);
-
-                // Verificar nulidade e valor de 'status'
-                string? status = jsonResponse["status"]?.ToString();
-                if (status != "success")
-                {
-                    return false;
-                }
-
-                // Verificar nulidade e valor de 'msg'
-                string? msg = jsonResponse["data"]?["msg"]?.ToString();
-                if (msg == null || !msg.Contains("A solicitação foi feita com sucesso"))
-                {
-                    return false;
-                }
-                return true;
+                return result;
             }
             catch (Exception)
             {
@@ -442,9 +410,9 @@ namespace CRM
             }
         }
 
-
         #endregion 
-        #region // lISTAS 
+
+        #region lISTAS 
         private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AtualizarBanco atualizarBancoPage = new();
@@ -460,9 +428,6 @@ namespace CRM
 
         private void vrfcAntiparasitario_Click(object sender, RoutedEventArgs e)
         {
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Antiparasitario.xlsx");
 
@@ -488,8 +453,6 @@ namespace CRM
 
         private void vrfcSuplemento_Click(object sender, RoutedEventArgs e)
         {
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Suplemento.xlsx");
@@ -517,9 +480,6 @@ namespace CRM
         private void vrfcVermifugo_Click(object sender, RoutedEventArgs e)
         {
 
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Vermifugo.xlsx");
 
@@ -546,8 +506,6 @@ namespace CRM
 
         private void vrfcRacao_Click(object sender, RoutedEventArgs e)
         {
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Racao.xlsx");
@@ -574,9 +532,6 @@ namespace CRM
 
         private void vrfcWelcome_Click(object sender, RoutedEventArgs e)
         {
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Welcome.xlsx");
 
@@ -602,9 +557,6 @@ namespace CRM
 
         private void vrfcVacina_Click(object sender, RoutedEventArgs e)
         {
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Vacina.xlsx");
 
@@ -630,9 +582,6 @@ namespace CRM
 
         private void vrfcMilteforan_Click(object sender, RoutedEventArgs e)
         {
-            // Obter o caminho do Desktop
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-
             // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Milteforan.xlsx");
 
@@ -661,7 +610,5 @@ namespace CRM
             relacaoWindow.Show();
         }
         #endregion
-
-
     }
 }
