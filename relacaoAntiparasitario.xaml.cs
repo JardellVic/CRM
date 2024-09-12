@@ -14,6 +14,26 @@ namespace CRM
             InitializeComponent();
             StartProcessing();
         }
+        
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrEmpty(phoneNumber))
+                return phoneNumber;
+
+            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
+
+
+            if (digits.Length == 11)
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
+            }
+            else if (digits.Length == 10)
+            {
+                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
+            }
+
+            return phoneNumber;
+        }
 
         private async void StartProcessing()
         {
@@ -31,6 +51,7 @@ namespace CRM
                     var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                     var inputFilePath = System.IO.Path.Combine(desktopPath, "Banco.xlsx");
                     string relacoesPath = Path.Combine(desktopPath, "Relações");
+
                     if (!Directory.Exists(relacoesPath))
                     {
                         Directory.CreateDirectory(relacoesPath);
@@ -155,24 +176,5 @@ namespace CRM
             });
         }
 
-        private string FormatPhoneNumber(string phoneNumber)
-        {
-            if (string.IsNullOrEmpty(phoneNumber))
-                return phoneNumber;
-
-            var digits = Regex.Replace(phoneNumber, @"[^\d]", "");
-
-
-            if (digits.Length == 11) 
-            {
-                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 5)}-{digits.Substring(7, 4)}";
-            }
-            else if (digits.Length == 10) 
-            {
-                return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
-            }
-
-            return phoneNumber;
-        }
     }
 }

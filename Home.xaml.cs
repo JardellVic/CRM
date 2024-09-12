@@ -25,6 +25,7 @@ namespace CRM
     public partial class Home : Window
     {
         #region Properties
+
         string desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Relações");
         public static Home Instance { get; private set; } = new Home();
         public string TemplateIdSelecionado { get; set; } = string.Empty;
@@ -54,6 +55,12 @@ namespace CRM
             cmbTemplates.SelectionChanged += CmbTemplates_SelectionChanged;
             Instance = this;
             this.ResizeMode = ResizeMode.NoResize;
+            SelectFileButton.IsEnabled = false;
+        }
+
+        private static void ShowError(string message)
+        {
+            MessageBox.Show(message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async void LoadTemplatesAsync()
@@ -84,76 +91,93 @@ namespace CRM
 
         private void AtualizarStatusBar(int quantidadeContatos)
         {
-            statusContatos.Content = $"Quantidade de contatos: {quantidadeContatos}";
+            try
+            {
+                statusContatos.Content = $"Quantidade de contatos: {quantidadeContatos}";
 
-            double valorUtility = 0.008 * quantidadeContatos;
-            statusUtility.Content = $"Valor Utility: ${valorUtility:F2}";
+                double valorUtility = 0.008 * quantidadeContatos;
+                statusUtility.Content = $"Valor Utility: ${valorUtility:F2}";
 
-            double valorMarketing = 0.0625 * quantidadeContatos;
-            statusMarketing.Content = $"Valor Marketing: ${valorMarketing:F2}";
-   
+                double valorMarketing = 0.0625 * quantidadeContatos;
+                statusMarketing.Content = $"Valor Marketing: ${valorMarketing:F2}";
+            }
+            catch (Exception ex)
+            {              
+                MessageBox.Show($"Ocorreu um erro ao atualizar a barra de status: {ex.Message}");
+            }
         }
 
         private void CmbTemplates_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (cmbTemplates.SelectedItem != null)
+            try
             {
-                string selectedTemplate = cmbTemplates.SelectedItem?.ToString() ?? string.Empty;
-                if (templateTextMap.ContainsKey(selectedTemplate))
+                if (cmbTemplates.SelectedItem != null)
                 {
-                    txtTemplate.Text = templateTextMap[selectedTemplate];
-                    if (templateIdMap.ContainsKey(selectedTemplate))
+                    string selectedTemplate = cmbTemplates.SelectedItem?.ToString() ?? string.Empty;
+                    if (templateTextMap.ContainsKey(selectedTemplate))
                     {
-                        TemplateIdSelecionado = templateIdMap[selectedTemplate];
+                        txtTemplate.Text = templateTextMap[selectedTemplate];
+                        if (templateIdMap.ContainsKey(selectedTemplate))
+                        {
+                            TemplateIdSelecionado = templateIdMap[selectedTemplate];
+                        }
+                        SelectFileButton.IsEnabled = true;
                     }
+                    
                 }
             }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private void SelectFileButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new()
+            try
             {
-                Filter = "Excel Files (*.xlsx)|*.xlsx|All Files (*.*)|*.*"
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                FilePathTextBox.Text = openFileDialog.FileName;
-
-                if (cmbTemplates.SelectedItem != null)
+                OpenFileDialog openFileDialog = new()
                 {
-                    string selectedTemplate = cmbTemplates.SelectedItem?.ToString() ?? string.Empty;
-                    int paramsCount = GetParamsCountForTemplate(selectedTemplate);
+                    Filter = "Excel Files (*.xlsx)|*.xlsx|All Files (*.*)|*.*"
+                };
 
-                    if (GetColumnCountFromExcel(openFileDialog.FileName) < paramsCount + 1)
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    FilePathTextBox.Text = openFileDialog.FileName;
+
+                    if (cmbTemplates.SelectedItem != null)
                     {
-                        ShowError($"O arquivo Excel deve ter pelo menos {paramsCount + 1} colunas.");
-                        return;
+                        string selectedTemplate = cmbTemplates.SelectedItem?.ToString() ?? string.Empty;
+                        int paramsCount = GetParamsCountForTemplate(selectedTemplate);
+
+                        if (GetColumnCountFromExcel(openFileDialog.FileName) < paramsCount + 1)
+                        {
+                            ShowError($"O arquivo Excel deve ter pelo menos {paramsCount + 1} colunas.");
+                            return;
+                        }
+
+                        OpenMappingWindow(paramsCount);
                     }
-
-                    OpenMappingWindow(paramsCount);
                 }
-            }
+            }catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
-
-        private static void ShowError(string message)
-        {
-            MessageBox.Show(message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
+     
         private static List<string> GetColumnNamesFromExcel(string filePath)
         {
-            var columnNames = new List<string>();
-            using (var package = new ExcelPackage(new FileInfo(filePath)))
+            try
             {
-                var worksheet = package.Workbook.Worksheets[0];
-                for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+                var columnNames = new List<string>();
+                using (var package = new ExcelPackage(new FileInfo(filePath)))
                 {
-                    columnNames.Add(worksheet.Cells[1, col].Text);
+                    var worksheet = package.Workbook.Worksheets[0];
+                    for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+                    {
+                        columnNames.Add(worksheet.Cells[1, col].Text);
+                    }
                 }
+                return columnNames;
             }
-            return columnNames;
+            catch (Exception ex) {MessageBox.Show(ex.Message);
+                return new List<string>();
+            }
+
         }
 
         private static List<List<string>> GetRowDataFromExcel(string filePath)
@@ -191,73 +215,79 @@ namespace CRM
 
         private void OpenMappingWindow(int paramsCount)
         {
-            var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
-            var rowData = GetRowDataFromExcel(FilePathTextBox.Text);
-
-            int quantidadeContatos = rowData.Count;
-            AtualizarStatusBar(quantidadeContatos);
-
-            MappingWindow mappingWindow = new(paramsCount, columnNames, rowData);
-            mappingWindow.ShowDialog();
-
-            if (!string.IsNullOrEmpty(mappingWindow.ColunaNumeroSelecionada) &&
-                !string.IsNullOrEmpty(mappingWindow.ColunaNomeSelecionada))
+            try
             {
-                ProcessRowData(mappingWindow.ColunaNumeroSelecionada, mappingWindow.ColunaNomeSelecionada, mappingWindow.ColunaVariaveisSelecionada, rowData);
+                var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
+                var rowData = GetRowDataFromExcel(FilePathTextBox.Text);
+
+                int quantidadeContatos = rowData.Count;
+                AtualizarStatusBar(quantidadeContatos);
+
+                MappingWindow mappingWindow = new(paramsCount, columnNames, rowData);
+                mappingWindow.ShowDialog();
+
+                if (!string.IsNullOrEmpty(mappingWindow.ColunaNumeroSelecionada) &&
+                    !string.IsNullOrEmpty(mappingWindow.ColunaNomeSelecionada))
+                {
+                    ProcessRowData(mappingWindow.ColunaNumeroSelecionada, mappingWindow.ColunaNomeSelecionada, mappingWindow.ColunaVariaveisSelecionada, rowData);
+                }
             }
+            catch (Exception ex) {MessageBox.Show(ex.Message); };
         }
 
         private void ProcessRowData(string colunaNumero, string colunaNome, string variaveisColuna, List<List<string>> rowData)
-        {
-            var linhas = new List<LineData>();
-            var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
-
-            if (columnNames == null)
+        { try
             {
-                ShowError("Não foi possível obter os nomes das colunas do Excel.");
-                return;
-            }
+                var linhas = new List<LineData>();
+                var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
 
-            int numeroIndex = columnNames.IndexOf(colunaNumero);
-            int nomeIndex = columnNames.IndexOf(colunaNome);
-
-            if (numeroIndex == -1 || nomeIndex == -1)
-            {
-                ShowError("As colunas especificadas não foram encontradas no Excel.");
-                return;
-            }
-
-            if (string.IsNullOrEmpty(variaveisColuna))
-            {
-                MessageBox.Show("A coluna de variáveis está vazia.");
-                return;
-            }
-
-            List<int> variaveisIndices = variaveisColuna.Trim('[', ']').Split(',')
-                .Select(v => columnNames.IndexOf(v.Trim('"')))
-                .ToList();
-
-            if (variaveisIndices.Any(i => i < 0 || i >= columnNames.Count))
-            {
-                ShowError("Alguns índices de variáveis não correspondem às colunas do Excel.");
-                return;
-            }
-
-            foreach (var row in rowData)
-            {
-                if (row.Count > numeroIndex && row.Count > nomeIndex && variaveisIndices.All(i => i < row.Count))
+                if (columnNames == null)
                 {
-                    var lineData = new LineData
-                    {
-                        Numero = row[numeroIndex],
-                        Nome = row[nomeIndex],
-                        Variaveis = variaveisIndices.Select(i => row[i]).ToList()
-                    };
-                    linhas.Add(lineData);
+                    ShowError("Não foi possível obter os nomes das colunas do Excel.");
+                    return;
                 }
-            }
 
-            Home.Instance.LinhasParaEnviar = linhas;
+                int numeroIndex = columnNames.IndexOf(colunaNumero);
+                int nomeIndex = columnNames.IndexOf(colunaNome);
+
+                if (numeroIndex == -1 || nomeIndex == -1)
+                {
+                    ShowError("As colunas especificadas não foram encontradas no Excel.");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(variaveisColuna))
+                {
+                    MessageBox.Show("A coluna de variáveis está vazia.");
+                    return;
+                }
+
+                List<int> variaveisIndices = variaveisColuna.Trim('[', ']').Split(',')
+                    .Select(v => columnNames.IndexOf(v.Trim('"')))
+                    .ToList();
+
+                if (variaveisIndices.Any(i => i < 0 || i >= columnNames.Count))
+                {
+                    ShowError("Alguns índices de variáveis não correspondem às colunas do Excel.");
+                    return;
+                }
+
+                foreach (var row in rowData)
+                {
+                    if (row.Count > numeroIndex && row.Count > nomeIndex && variaveisIndices.All(i => i < row.Count))
+                    {
+                        var lineData = new LineData
+                        {
+                            Numero = row[numeroIndex],
+                            Nome = row[nomeIndex],
+                            Variaveis = variaveisIndices.Select(i => row[i]).ToList()
+                        };
+                        linhas.Add(lineData);
+                    }
+                }
+
+                Home.Instance.LinhasParaEnviar = linhas;
+            }catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private int GetParamsCountForTemplate(string templateName)
@@ -267,43 +297,53 @@ namespace CRM
 
         private static int GetColumnCountFromExcel(string filePath)
         {
-            using var package = new ExcelPackage(new FileInfo(filePath));
-            var worksheet = package.Workbook.Worksheets[0];
-            return worksheet.Dimension.End.Column;
+            try
+            {
+                using var package = new ExcelPackage(new FileInfo(filePath));
+                var worksheet = package.Workbook.Worksheets[0];
+                return worksheet.Dimension.End.Column;
+            }
+            catch(Exception ex) { MessageBox.Show(ex.Message); return 0; }  
         }
 
         private void InicializarContagemRegressiva(int quantidadeContatos)
         {
-            double totalSegundos = 6 * quantidadeContatos;
-            tempoRestante = TimeSpan.FromSeconds(totalSegundos);
-
-            timer = new DispatcherTimer
+            try
             {
-                Interval = TimeSpan.FromSeconds(1)
-            };
-            #pragma warning disable CS8622
-            timer.Tick += Timer_Tick;
-            #pragma warning restore CS8622
-            timer.Start();
+                double totalSegundos = 6 * quantidadeContatos;
+                tempoRestante = TimeSpan.FromSeconds(totalSegundos);
+
+                timer = new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromSeconds(1)
+                };
+                #pragma warning disable CS8622
+                timer.Tick += Timer_Tick;
+                #pragma warning restore CS8622
+                timer.Start();
+            }catch(Exception e) { MessageBox.Show(e.Message); return; }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            if (sender == null)
+            try
             {
-                
-                return;
-            }
-            if (tempoRestante.TotalSeconds > 0)
-            {
-                tempoRestante = tempoRestante.Subtract(TimeSpan.FromSeconds(1));
-                statusTempo.Content = $"Tempo Restante: {tempoRestante:hh\\:mm\\:ss}";
-            }
-            else
-            {
-                timer.Stop();
-                statusTempo.Content = "Tempo Esgotado";
-            }
+                if (sender == null)
+                {
+
+                    return;
+                }
+                if (tempoRestante.TotalSeconds > 0)
+                {
+                    tempoRestante = tempoRestante.Subtract(TimeSpan.FromSeconds(1));
+                    statusTempo.Content = $"Tempo Restante: {tempoRestante:hh\\:mm\\:ss}";
+                }
+                else
+                {
+                    timer.Stop();
+                    statusTempo.Content = "Tempo Esgotado";
+                }
+            }catch(Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private async void btnEnviarDisparo_Click(object sender, RoutedEventArgs e)
@@ -436,12 +476,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriAntiparasitario.Text = "Verificar Anti-Parasitário:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Antiparasitario.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriAntiparasitario.Text = "Verificar Anti-Parasitário:✅";
+            
         }
 
         private void suplemento_Click(object sender, RoutedEventArgs e)
@@ -462,12 +503,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriSuplemento.Text = "Verificar Suplemento:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Suplemento.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriSuplemento.Text = "Verificar Suplemento:✅";
+            
         }
 
         private void vermifugo_Click(object sender, RoutedEventArgs e)
@@ -488,12 +530,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriVermifugo.Text = "Verificar Vermifugo:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Vermifugo.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriVermifugo.Text = "Verificar Vermifugo:✅";
+            
 
         }
 
@@ -515,12 +558,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriRacao.Text = "Verificar Ração:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Racao.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriRacao.Text = "Verificar Ração:✅";
+            
         }
 
         private void welcome_Click(object sender, RoutedEventArgs e)
@@ -540,12 +584,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriWelcome.Text = "Verificar Welcome:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Welcome.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriWelcome.Text = "Verificar Welcome:✅";
+            
         }
 
         private void vacina_Click(object sender, RoutedEventArgs e)
@@ -565,12 +610,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriVacina.Text = "Verificar Vacina:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Vacina.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriVacina.Text = "Verificar Vacina:✅";
+            
         }
 
         private void milteforan_Click(object sender, RoutedEventArgs e)
@@ -590,12 +636,13 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                txtVeriMilteforan.Text = "Verificar Milteforan:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Milteforan.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            txtVeriMilteforan.Text = "Verificar Milteforan:✅";
+            
         }
 
         private void relatorio_Click(object sender, RoutedEventArgs e)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRM"
         mc:Ignorable="d"
-        Title="Gestão de Relacionamento com o Cliente (CRM)" Height="741" Width="1280" Background="#FF191919">
+        Title="Gestão de Relacionamento com o Cliente (CRM)" Height="741" Width="1280" Background="#FF191919" WindowStartupLocation="CenterScreen">
     <Grid Width="1280" Height="720">
         <Menu x:Name="menuBar" Margin="0,0,0,702" Background="#FF191919">
             <MenuItem x:Name="antiparasitario" Header="Antiparasitario" Foreground="White" Click="antiparasitario_Click"/>
