@@ -12,6 +12,7 @@ using CRM.conexao.API;
 using System.Windows.Threading;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace CRM
 {
@@ -38,7 +39,9 @@ namespace CRM
         private readonly Dictionary<string, string> templateIdMap;
         private DispatcherTimer timer = new();
         private TimeSpan tempoRestante;
-
+        private bool isDisparoPaused = false;
+        private bool isDisparoRunning = false;
+        private int currentIndex = 0;
         #endregion
 
         #region API PLANETFONE
@@ -56,6 +59,42 @@ namespace CRM
             Instance = this;
             this.ResizeMode = ResizeMode.NoResize;
             SelectFileButton.IsEnabled = false;
+        }
+
+        private async void btnEnviarDisparo_Click(object sender, RoutedEventArgs e)
+        {
+            if (isDisparoPaused)
+            {
+                isDisparoPaused = false;
+                isDisparoRunning = true;
+
+                InicializarContagemRegressiva(Home.Instance.LinhasParaEnviar.Count - currentIndex);
+
+                await ContinuarEnvioAsync();
+            }
+            else
+            {
+                if (!isDisparoRunning)
+                {
+                    isDisparoRunning = true;
+                    InicializarContagemRegressiva(Home.Instance.LinhasParaEnviar.Count);
+                    await ContinuarEnvioAsync();
+                }
+            }
+        }
+
+        private void btnPareDisparo_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Deseja finalizar o disparo?", "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                isDisparoRunning = false;
+                isDisparoPaused = false;
+
+                timer?.Stop();
+
+                txtBlockConsole.Inlines.Add(new Run("\nDisparo finalizado.") { Foreground = Brushes.Red });
+            }
         }
 
         private static void ShowError(string message)
@@ -102,7 +141,7 @@ namespace CRM
                 statusMarketing.Content = $"Valor Marketing: ${valorMarketing:F2}";
             }
             catch (Exception ex)
-            {              
+            {
                 MessageBox.Show($"Ocorreu um erro ao atualizar a barra de status: {ex.Message}");
             }
         }
@@ -123,7 +162,7 @@ namespace CRM
                         }
                         SelectFileButton.IsEnabled = true;
                     }
-                    
+
                 }
             }
             catch (Exception ex) { MessageBox.Show(ex.Message); }
@@ -156,9 +195,10 @@ namespace CRM
                         OpenMappingWindow(paramsCount);
                     }
                 }
-            }catch (Exception ex) { MessageBox.Show(ex.Message); }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
-     
+
         private static List<string> GetColumnNamesFromExcel(string filePath)
         {
             try
@@ -174,7 +214,9 @@ namespace CRM
                 }
                 return columnNames;
             }
-            catch (Exception ex) {MessageBox.Show(ex.Message);
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
                 return new List<string>();
             }
 
@@ -232,11 +274,12 @@ namespace CRM
                     ProcessRowData(mappingWindow.ColunaNumeroSelecionada, mappingWindow.ColunaNomeSelecionada, mappingWindow.ColunaVariaveisSelecionada, rowData);
                 }
             }
-            catch (Exception ex) {MessageBox.Show(ex.Message); };
+            catch (Exception ex) { MessageBox.Show(ex.Message); };
         }
 
         private void ProcessRowData(string colunaNumero, string colunaNome, string variaveisColuna, List<List<string>> rowData)
-        { try
+        {
+            try
             {
                 var linhas = new List<LineData>();
                 var columnNames = GetColumnNamesFromExcel(FilePathTextBox.Text);
@@ -287,7 +330,8 @@ namespace CRM
                 }
 
                 Home.Instance.LinhasParaEnviar = linhas;
-            }catch (Exception ex) { MessageBox.Show(ex.Message); }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
         private int GetParamsCountForTemplate(string templateName)
@@ -303,7 +347,7 @@ namespace CRM
                 var worksheet = package.Workbook.Worksheets[0];
                 return worksheet.Dimension.End.Column;
             }
-            catch(Exception ex) { MessageBox.Show(ex.Message); return 0; }  
+            catch (Exception ex) { MessageBox.Show(ex.Message); return 0; }
         }
 
         private void InicializarContagemRegressiva(int quantidadeContatos)
@@ -321,7 +365,8 @@ namespace CRM
                 timer.Tick += Timer_Tick;
                 #pragma warning restore CS8622
                 timer.Start();
-            }catch(Exception e) { MessageBox.Show(e.Message); return; }
+            }
+            catch (Exception e) { MessageBox.Show(e.Message); return; }
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -343,23 +388,23 @@ namespace CRM
                     timer.Stop();
                     statusTempo.Content = "Tempo Esgotado";
                 }
-            }catch(Exception ex) { MessageBox.Show(ex.Message); }
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message); }
         }
 
-        private async void btnEnviarDisparo_Click(object sender, RoutedEventArgs e)
+        private async Task ContinuarEnvioAsync()
         {
             int sucessoCount = 0;
             int erroCount = 0;
             int totalLinhas = Home.Instance.LinhasParaEnviar.Count;
 
-            InicializarContagemRegressiva(totalLinhas);
-
             progressDisparo.IsIndeterminate = false;
             progressDisparo.Maximum = totalLinhas;
-            progressDisparo.Value = 0;
+            progressDisparo.Value = currentIndex; // Defina o progresso com base no índice atual
 
             txtBlockConsole.Inlines.Clear();
-            txtBlockConsole.Inlines.Add(new Run($"Iniciando envio... (0/{totalLinhas})") { Foreground = Brushes.Yellow });
+            txtBlockConsoleResponse.Inlines.Clear();
+            txtBlockConsole.Inlines.Add(new Run($"Iniciando envio... ({currentIndex}/{totalLinhas})") { Foreground = Brushes.Yellow });
 
             scrollViewerConsole.ScrollToEnd();
 
@@ -367,9 +412,18 @@ namespace CRM
             {
                 var linhasParaEnviar = Home.Instance.LinhasParaEnviar;
 
-                foreach (var linha in linhasParaEnviar.Select((value, index) => new { value, index }))
+                for (int i = currentIndex; i < linhasParaEnviar.Count; i++)
                 {
-                    bool resultado = await EnviarLinhaAsync(linha.value);
+                    if (!isDisparoRunning)
+                        break;
+
+                    while (isDisparoPaused)
+                    {
+                        // Aguarde enquanto o disparo estiver pausado
+                        await Task.Delay(500); // Aguarda 0.5 segundo
+                    }
+
+                    bool resultado = await EnviarLinhaAsync(linhasParaEnviar[i]);
                     if (resultado)
                     {
                         sucessoCount++;
@@ -377,13 +431,15 @@ namespace CRM
                     else
                     {
                         erroCount++;
-                        txtBlockConsole.Inlines.Add(new Run($"\nErro: {linha.value.Numero}") { Foreground = Brushes.Red });
+                        txtBlockConsole.Inlines.Add(new Run($"\nErro: {linhasParaEnviar[i].Numero}") { Foreground = Brushes.Red });
                     }
 
-                    progressDisparo.Value = linha.index + 1;
-                    txtBlockConsole.Inlines.Add(new Run($"\nProgresso: {linha.index + 1}/{totalLinhas}") { Foreground = Brushes.Blue });
+                    currentIndex = i + 1; // Atualize o índice atual
+                    progressDisparo.Value = currentIndex;
+                    txtBlockConsole.Inlines.Add(new Run($"\nProgresso: {currentIndex}/{totalLinhas}") { Foreground = Brushes.Blue });
 
                     scrollViewerConsole.ScrollToEnd();
+                    scrollViewerConsoleT.ScrollToEnd();
 
                     await Task.Delay(500); // Aguarda 0.5 segundo entre envios
                 }
@@ -395,8 +451,13 @@ namespace CRM
             finally
             {
                 progressDisparo.IsIndeterminate = false;
-                MessageBox.Show($"Envios concluídos!\n\nSucessos: {sucessoCount}\nErros: {erroCount}",
-                                "Resultado do Envio", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (isDisparoRunning)
+                {
+                    MessageBox.Show($"Envios concluídos!\n\nSucessos: {sucessoCount}\nErros: {erroCount}",
+                                    "Resultado do Envio", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                // Resetar índice se necessário
+                currentIndex = 0;
             }
         }
 
@@ -404,19 +465,29 @@ namespace CRM
         {
             try
             {
-                bool optinResult = await apiManager.OptinNumeroAsync(linha.Numero);
+                var (optinResult, responseBody) = await apiManager.OptinNumeroAsync(linha.Numero);
+                (var sendResult, string responseBodyT) = await apiManager.EnviarLinhaAsync(TemplateIdSelecionado, linha.Numero, linha.Nome, linha.Variaveis);
 
+                // Format JSON response
+                string formattedResponseBody = FormatJson(responseBody);
+                string formattedResponseBodyT = FormatJson(responseBodyT);
+
+                // Display formatted response
                 if (optinResult)
                 {
-                    txtBlockConsole.Inlines.Add(new Run("\nOptIn feito com sucesso") { Foreground = Brushes.Green });
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\nOptIn feito com sucesso:") { Foreground = Brushes.Yellow });
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\n{formattedResponseBody}") { Foreground = Brushes.Green });
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\nMensagem enviada com sucesso") { Foreground = Brushes.Yellow });
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\n{formattedResponseBodyT}") { Foreground = Brushes.Green });
                 }
                 else
                 {
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\nErro no OptIn:") { Foreground = Brushes.Red });
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\n{formattedResponseBody}") { Foreground = Brushes.Red });
+                    txtBlockConsoleResponse.Inlines.Add(new Run($"\n{formattedResponseBodyT}") { Foreground = Brushes.Red });
                     txtBlockConsole.Inlines.Add(new Run("Erro ao fazer optin") { Foreground = Brushes.Red });
                     return false;
                 }
-
-                bool sendResult = await apiManager.EnviarLinhaAsync(TemplateIdSelecionado, linha.Numero, linha.Nome, linha.Variaveis);
 
                 if (sendResult)
                 {
@@ -436,11 +507,48 @@ namespace CRM
             }
         }
 
+        private string FormatJson(string json)
+        {
+            try
+            {
+                var jsonObject = JsonSerializer.Deserialize<JsonElement>(json);
+
+                // Verifica se a propriedade 'data' tem a propriedade 'msg' ou 'messageId'
+                if (jsonObject.TryGetProperty("data", out var dataProperty))
+                {
+                    if (dataProperty.TryGetProperty("msg", out var msgProperty))
+                    {
+                        // Formato com 'msg'
+                        var status = jsonObject.GetProperty("status").GetString();
+                        var message = msgProperty.GetString();
+                        return $"Status: {status}\nMensagem: {message}";
+                    }
+                    else if (dataProperty.TryGetProperty("messageId", out var messageIdProperty) &&
+                             dataProperty.TryGetProperty("status", out var statusProperty))
+                    {
+                        // Formato com 'messageId' e 'status'
+                        var status = jsonObject.GetProperty("status").GetString();
+                        var messageId = messageIdProperty.GetString();
+                        var submittedStatus = statusProperty.GetString();
+                        return $"Status: {status}\nMessageId: {messageId}\nStatus: {submittedStatus}";
+                    }
+                }
+
+                // Caso não consiga identificar o formato, retorna o JSON bruto
+                return json;
+            }
+            catch
+            {
+                // Retorna o JSON bruto se a formatação falhar
+                return json;
+            }
+        }
+
         private async Task<bool> OptinNumeroAsync(string numero)
         {
             try
             {
-                bool result = await apiManager.OptinNumeroAsync(numero);
+                var (result, responseBody) = await apiManager.OptinNumeroAsync(numero);
 
                 return result;
             }
@@ -450,7 +558,7 @@ namespace CRM
             }
         }
 
-        #endregion 
+        #endregion
 
         #region lISTAS 
         private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
@@ -657,5 +765,10 @@ namespace CRM
             relacaoWindow.Show();
         }
         #endregion
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+           Application.Current.Shutdown();
+        }
     }
 }

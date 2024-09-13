@@ -11,7 +11,10 @@
 
   <ItemGroup>
     <None Remove="backWhats.jpg" />
+    <None Remove="botao-de-pausa %281%29.png" />
+    <None Remove="botao-reproduzir.png" />
     <None Remove="excel.png" />
+    <None Remove="pare.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +34,10 @@
 
   <ItemGroup>
     <Resource Include="backWhats.jpg" />
+    <Resource Include="botao-de-pausa (1).png" />
+    <Resource Include="botao-reproduzir.png" />
     <Resource Include="excel.png" />
+    <Resource Include="pare.png" />
   </ItemGroup>
 
 </Project>

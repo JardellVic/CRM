@@ -45,7 +45,7 @@ namespace CRM
                     var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
                     var pattern = string.Join("|", caracteresIndesejados.Select(System.Text.RegularExpressions.Regex.Escape));
                     var filteredRows = dataTable.AsEnumerable()
-                        .Where(row => !System.Text.RegularExpressions.Regex.IsMatch(row.Field<string>("nome"), pattern))
+                        .Where(row => !System.Text.RegularExpressions.Regex.IsMatch(row.Field<string>("nome")!,pattern))
                         .ToList();
 
                     var dataAtual = DateTime.Today;
@@ -116,8 +116,8 @@ namespace CRM
                         {
                             var newRow = resultadosFiltradosDataTable.NewRow();
                             newRow["nome"] = row["nome"];
-                            newRow["fone"] = FormatPhoneNumber(row["fone"].ToString());
-                            newRow["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
+                            newRow["fone"] = FormatPhoneNumber(row["fone"].ToString()!);
+                            newRow["fone2"] = FormatPhoneNumber(row["fone2"].ToString()!);
                             newRow["Nome_Produto"] = row["Nome_Produto"];
                             newRow["Data da Venda"] = row["Data da Venda"];
                             newRow["Grupo"] = row["Grupo"];

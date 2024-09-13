@@ -17,8 +17,8 @@ namespace CRM
             InitializeComponent();
             txtProduto.IsEnabled = false;
             btnSearch.IsEnabled = false;
-            dataInicial.SelectedDateChanged += OnDateSelected;
-            dataFinal.SelectedDateChanged += OnDateSelected;
+            dataInicial.SelectedDateChanged += OnDateSelected!;
+            dataFinal.SelectedDateChanged += OnDateSelected!;
             txtProduto.TextChanged += OnTextChanged;
             btnSearch.Click += OnSearchClick;
             btnExportarExcel.Click += OnExportarExcelClick;
@@ -44,8 +44,8 @@ namespace CRM
 
         private void OnSearchClick(object sender, RoutedEventArgs e)
         {
-            DateTime startDate = dataInicial.SelectedDate.Value;
-            DateTime endDate = dataFinal.SelectedDate.Value;
+            DateTime startDate = dataInicial.SelectedDate!.Value;
+            DateTime endDate = dataFinal.SelectedDate!.Value;
             string produtoFilter = txtProduto.Text.Trim();
             var termosBusca = produtoFilter.Split(new[] { '%' }, StringSplitOptions.RemoveEmptyEntries);
             var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
@@ -53,9 +53,9 @@ namespace CRM
             DataTable dt = dbHelper.FetchData(startDate, endDate);
 
             var filteredData = dt.AsEnumerable()
-                                 .Where(row => termosBusca.All(termo => row.Field<string>("Nome_Produto")
+                                 .Where(row => termosBusca.All(termo => row.Field<string>("Nome_Produto")!
                                  .IndexOf(termo, StringComparison.OrdinalIgnoreCase) >= 0) &&
-                                 !caracteresIndesejados.Any(ci => row.Field<string>("nome")
+                                 !caracteresIndesejados.Any(ci => row.Field<string>("nome")!
                                  .IndexOf(ci, StringComparison.OrdinalIgnoreCase) >= 0));
 
             if (filteredData.Any())
@@ -110,21 +110,19 @@ namespace CRM
                 var dataView = (DataView)listaProd.ItemsSource;
                 var dataTable = dataView.ToTable();
 
-                // Aplicar a formatação nos números de telefone (fone e fone2)
                 foreach (DataRow row in dataTable.Rows)
                 {
                     if (dataTable.Columns.Contains("fone"))
                     {
-                        row["fone"] = FormatPhoneNumber(row["fone"].ToString());
+                        row["fone"] = FormatPhoneNumber(row["fone"].ToString()!);
                     }
 
                     if (dataTable.Columns.Contains("fone2"))
                     {
-                        row["fone2"] = FormatPhoneNumber(row["fone2"].ToString());
+                        row["fone2"] = FormatPhoneNumber(row["fone2"].ToString()!);
                     }
                 }
 
-                // Inserir os dados formatados na planilha
                 worksheet.Cell(1, 1).InsertTable(dataTable, "Clientes");
 
                 workbook.SaveAs(filePath);
