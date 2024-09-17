@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 # Pasta de conexão
 conexao/
+AtualizadorCRM/
+UploadCRM/

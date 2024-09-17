@@ -15,7 +15,7 @@
         <Button x:Name="btnSearch" Content="Pesquisar" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="506,68,0,0" Width="100" Background="#FF414141" Foreground="White"/>
         <Button x:Name="btnExportarExcel" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="26,333,0,0" Width="35" Foreground="White"  Height="31" BorderBrush="{x:Null}">
             <Button.Background>
-                <ImageBrush ImageSource="/excel.png" Stretch="Uniform"/>
+                <ImageBrush ImageSource="../resources/excel.png" Stretch="Uniform"/>
             </Button.Background>
         </Button>
         <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="111,339,0,0" Height="19" Background="White" Foreground="Red" Width="495"/>

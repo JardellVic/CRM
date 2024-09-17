@@ -61,6 +61,11 @@ namespace CRM
             SelectFileButton.IsEnabled = false;
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
         private async void btnEnviarDisparo_Click(object sender, RoutedEventArgs e)
         {
             if (isDisparoPaused)
@@ -766,9 +771,5 @@ namespace CRM
         }
         #endregion
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-           Application.Current.Shutdown();
-        }
     }
 }

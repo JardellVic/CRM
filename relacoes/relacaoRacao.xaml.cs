@@ -41,6 +41,14 @@ namespace CRM
             {
                 return $"(+55) {digits.Substring(0, 2)} {digits.Substring(2, 4)}-{digits.Substring(6, 4)}";
             }
+            else if (digits.Length == 9)
+            {
+                return $"(+55) 31 {digits.Substring(0, 5)}-{digits.Substring(5, 4)}";
+            }
+            else if (digits.Length == 8)
+            {
+                return $"(+55) 31 {digits.Substring(0, 4)}-{digits.Substring(4, 4)}";
+            }
 
             return phoneNumber;
         }

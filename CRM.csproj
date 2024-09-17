@@ -7,11 +7,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Users.ico</ApplicationIcon>
+	  <AssemblyVersion>1.0.0</AssemblyVersion>
+	  <FileVersion>1.0.0</FileVersion>
+	  <Version>1.0.0</Version>
+
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="backWhats.jpg" />
-    <None Remove="botao-de-pausa %281%29.png" />
     <None Remove="botao-reproduzir.png" />
     <None Remove="excel.png" />
     <None Remove="pare.png" />
@@ -26,6 +29,7 @@
     <PackageReference Include="EPPlus" Version="7.2.2" />
     <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1001" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Npgsql" Version="8.0.4" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Threading.Tasks" Version="4.3.0" />
@@ -33,11 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="backWhats.jpg" />
-    <Resource Include="botao-de-pausa (1).png" />
-    <Resource Include="botao-reproduzir.png" />
-    <Resource Include="excel.png" />
-    <Resource Include="pare.png" />
+    <Resource Include="resources\backWhats.jpg" />
+    <Resource Include="resources\botao-reproduzir.png" />
+    <Resource Include="resources\excel.png" />
+    <Resource Include="resources\pare.png" />
   </ItemGroup>
 
 </Project>

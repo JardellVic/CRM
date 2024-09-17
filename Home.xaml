@@ -91,7 +91,7 @@
                 <Label Content="Templates" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
                 <Border x:Name="borderBackMensagem" BorderBrush="Black" BorderThickness="1" Margin="10,81,10,322">
                     <Border.Background>
-                        <ImageBrush ImageSource="/backWhats.jpg" TileMode="None" Stretch="UniformToFill"/>
+                        <ImageBrush ImageSource="resources/backWhats.jpg" TileMode="None" Stretch="UniformToFill"/>
                     </Border.Background>
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="1,1,0,1">
                         <TextBlock x:Name="txtTemplate" TextWrapping="Wrap" Text="" Margin="9,9,9,9" FontSize="18" FontFamily="Bahnschrift"/>
@@ -107,12 +107,12 @@
                 <ProgressBar x:Name="progressDisparo" HorizontalAlignment="Left" Height="31" Margin="11,499,0,0" VerticalAlignment="Top" Width="541"/>
                 <Button x:Name="btnEnviarDisparo" Content="" HorizontalAlignment="Left" Margin="563,496,0,0" VerticalAlignment="Top" Height="37" Width="37" Click="btnEnviarDisparo_Click" BorderBrush="#FF191919">
                     <Button.Background>
-                        <ImageBrush Stretch="UniformToFill" ImageSource="/botao-reproduzir.png"/>
+                        <ImageBrush Stretch="UniformToFill" ImageSource="resources/botao-reproduzir.png"/>
                     </Button.Background>
                 </Button>
                 <Button x:Name="btnPareDisparo" Content="" HorizontalAlignment="Left" Margin="612,496,0,0" VerticalAlignment="Top" Height="37" Width="37" Click="btnPareDisparo_Click" BorderBrush="#FF191919" RenderTransformOrigin="0.541,1.718">
                     <Button.Background>
-                        <ImageBrush Stretch="UniformToFill" ImageSource="/pare.png"/>
+                        <ImageBrush Stretch="UniformToFill" ImageSource="resources/pare.png"/>
                     </Button.Background>
                 </Button>
             </Grid>
