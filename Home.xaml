@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Gestão de Relacionamento com o Cliente (CRM)" Height="741" Width="1280" Background="#FF191919" WindowStartupLocation="CenterScreen">
     <Grid Width="1280" Height="720">
-        <Menu x:Name="menuBar" Margin="0,0,0,702" Background="#FF191919">
+        <Menu x:Name="menuBar" Margin="0,0,0,698" Background="#FF2F2F2F">
             <MenuItem x:Name="antiparasitario" Header="Antiparasitario" Foreground="White" Click="antiparasitario_Click"/>
             <MenuItem x:Name="suplemento" Header="Suplemento" Foreground="White" Click="suplemento_Click"/>
             <MenuItem x:Name="vermifugo" Header="Vermifugo" Foreground="White" Click="vermifugo_Click"/>
@@ -19,7 +19,7 @@
             <MenuItem x:Name="banco" Header="Banco" Foreground="White" Click="BancoMenuItem_Click"/>
             <MenuItem x:Name="relatorio" Header="Relatorio Retorno" Foreground="White" Click="relatorio_Click"/>
             <MenuItem x:Name="clientesPorProduto" Header="Clientes Por Produto" Foreground="White" Click="clientesPorProduto_Click"/>
-
+            <Label x:Name="lblData" Content="Label" Foreground="White" Width="83" Height="21" HorizontalContentAlignment="Stretch" FontSize="14" Padding="0,0,0,5" UseLayoutRounding="False" ScrollViewer.CanContentScroll="True" IsEnabled="False"/>
 
         </Menu>
 

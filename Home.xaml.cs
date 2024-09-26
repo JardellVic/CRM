@@ -59,6 +59,7 @@ namespace CRM
             Instance = this;
             this.ResizeMode = ResizeMode.NoResize;
             SelectFileButton.IsEnabled = false;
+            lblData.Content = DateTime.Now.ToString("dd/mm/yyyy");
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
