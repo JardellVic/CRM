@@ -139,7 +139,6 @@ namespace CRM
             return filteredTable;
         }
 
-
         private string FormatPhoneNumber(string phoneNumber)
         {
             if (string.IsNullOrEmpty(phoneNumber))

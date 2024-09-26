@@ -424,7 +424,6 @@ namespace CRM
 
                     while (isDisparoPaused)
                     {
-                        // Aguarde enquanto o disparo estiver pausado
                         await Task.Delay(500); // Aguarda 0.5 segundo
                     }
 
@@ -439,7 +438,7 @@ namespace CRM
                         txtBlockConsole.Inlines.Add(new Run($"\nErro: {linhasParaEnviar[i].Numero}") { Foreground = Brushes.Red });
                     }
 
-                    currentIndex = i + 1; // Atualize o índice atual
+                    currentIndex = i + 1;
                     progressDisparo.Value = currentIndex;
                     txtBlockConsole.Inlines.Add(new Run($"\nProgresso: {currentIndex}/{totalLinhas}") { Foreground = Brushes.Blue });
 
@@ -458,12 +457,23 @@ namespace CRM
                 progressDisparo.IsIndeterminate = false;
                 if (isDisparoRunning)
                 {
-                    MessageBox.Show($"Envios concluídos!\n\nSucessos: {sucessoCount}\nErros: {erroCount}",
-                                    "Resultado do Envio", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                // Resetar índice se necessário
+                    MessageBoxResult result = MessageBox.Show(
+                        $"Envios concluídos!\n\nSucessos: {sucessoCount}\nErros: {erroCount}",
+                        "Resultado do Envio", MessageBoxButton.OK, MessageBoxImage.Information
+                    );
+
+                    if (result == MessageBoxResult.OK)
+                    {
+                        
+                        txtBlockConsole.Inlines.Clear();
+                        txtBlockConsoleResponse.Inlines.Clear();
+                        isDisparoRunning = false;
+                        isDisparoPaused = false;
+                    }
+                }           
                 currentIndex = 0;
             }
+
         }
 
         private async Task<bool> EnviarLinhaAsync(LineData linha)
