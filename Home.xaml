@@ -19,7 +19,19 @@
             <MenuItem x:Name="banco" Header="Banco" Foreground="White" Click="BancoMenuItem_Click"/>
             <MenuItem x:Name="relatorio" Header="Relatorio Retorno" Foreground="White" Click="relatorio_Click"/>
             <MenuItem x:Name="clientesPorProduto" Header="Clientes Por Produto" Foreground="White" Click="clientesPorProduto_Click"/>
-            <Label x:Name="lblData" Content="Label" Foreground="White" Width="83" Height="21" HorizontalContentAlignment="Stretch" FontSize="14" Padding="0,0,0,5" UseLayoutRounding="False" ScrollViewer.CanContentScroll="True" IsEnabled="False"/>
+            <MenuItem x:Name="ajuda" Header="Ajuda"  Foreground="White">
+                <MenuItem Header="Antiparasitario" Foreground="#FF191919" Click="HelpAntiparasitario_Click"/>
+                <MenuItem Header="Suplemento" Foreground="#FF191919" Click="HelpSuplemento_Click"/>
+                <MenuItem Header="Ração" Foreground="#FF191919"/>
+                <MenuItem Header="Welcome" Foreground="#FF191919"/>
+                <MenuItem Header="Vacina" Foreground="#FF191919"/>
+                <MenuItem Header="Banco" Foreground="#FF191919"/>
+                <MenuItem Header="Relatorio Retorno" Foreground="#FF191919"/>
+                <MenuItem Header="Clientes Por Produto" Foreground="#FF191919"/>
+            </MenuItem>
+
+            <Label x:Name="lblData" Content="Data" Foreground="White" Width="83" Height="21" HorizontalContentAlignment="Stretch" FontSize="14" Padding="0,0,0,5" UseLayoutRounding="False" ScrollViewer.CanContentScroll="True" IsEnabled="False"/>
+            <Label x:Name="lblUsuario" Content="Usuario" Foreground="White" Width="83" Height="21" HorizontalContentAlignment="Stretch" FontSize="14" Padding="0,0,0,5" UseLayoutRounding="False" ScrollViewer.CanContentScroll="True" IsEnabled="False" Margin="220,0,0,0"/>
 
         </Menu>
 

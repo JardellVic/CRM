@@ -2,25 +2,38 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
-using Npgsql;
+using CRM.conexao;
 
 namespace CRM
 {
     public partial class Index : Window
     {
-        private const string connectionString = "Host=172.16.1.103;Port=5432;Username=jvsilva;Password=1011;Database=crm"; 
+        private readonly conexaoCRM conexao;
+
         public Index()
         {
             InitializeComponent();
+            conexao = new conexaoCRM();
 
             string localVersion = GetAssemblyVersion();
+            string dbVersion = string.Empty;
+            txtPass.Focus();
 
-            string dbVersion = GetDatabaseVersion();
+            try
+            {
+                dbVersion = conexao.GetDatabaseVersion();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+                return;
+            }
 
             if (dbVersion == localVersion)
             {
                 this.KeyDown += new KeyEventHandler(EnterClick);
-                txtPass.Focus();
+                txtLogin.Focus();
             }
             else
             {
@@ -37,33 +50,6 @@ namespace CRM
             return version.ToString();
         }
 
-        private string GetDatabaseVersion()
-        {
-            string dbVersion = string.Empty;
-
-            try
-            {
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-
-                    string query = "SELECT version FROM version LIMIT 1";
-                    using (var command = new NpgsqlCommand(query, connection))
-                    {
-                        var result = command.ExecuteScalar();
-                        dbVersion = result?.ToString();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Erro ao conectar ao banco de dados: {ex.Message}", "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
-            }
-
-            return dbVersion;
-        }
-
         private void EnterClick(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -74,16 +60,43 @@ namespace CRM
 
         private void BtnLogin_Click(object sender, RoutedEventArgs e)
         {
-            if (txtPass.Password == "489524")
+            string login = txtLogin.Text;
+            string senha = txtPass.Password;
+
+            string username = string.Empty;
+            try
             {
-                Home homeWindow = new Home();
+                username = conexao.VerificarCredenciais(login, senha);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Erro de Conexão", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                try
+                {
+                    conexao.InserirControleExecucao(username);
+                    conexao.InserirControleExecucaoVerificar(username);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Erro ao registrar controle de execução", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Redireciona para a próxima tela
+                Home homeWindow = new Home(username);
                 homeWindow.Show();
                 this.Close();
             }
             else
             {
-                MessageBox.Show("Senha incorreta. Tente novamente.");
+                MessageBox.Show("Login ou senha incorretos. Tente novamente.", "Erro de Autenticação", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+
     }
 }

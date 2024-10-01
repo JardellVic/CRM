@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using CRM.conexao;
 using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -9,6 +10,7 @@ namespace CRM
 {
     public partial class relacaoMilteforan : Window
     {
+        conexaoCRM conexao = new conexaoCRM();
         public relacaoMilteforan()
         {
             InitializeComponent();
@@ -132,6 +134,7 @@ namespace CRM
                         Dispatcher.Invoke(() =>
                         {
                             MessageBox.Show($"Arquivo salvo: {outputFilePath}", "Concluído", MessageBoxButton.OK);
+                            conexao.AtualizarExecucao("milteforan");
                             this.Close();
                         });
                     }

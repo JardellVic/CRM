@@ -11,6 +11,7 @@ namespace CRM
 {
     public partial class relacaoWelcome : Window
     {
+        conexaoCRM conexao = new conexaoCRM();
         private DataTable _dataTable;
         private conexaoMouraWelcome dbHelper;
 
@@ -100,6 +101,7 @@ namespace CRM
             progressBar.Visibility = Visibility.Collapsed;
 
             MessageBox.Show($"Arquivo salvo em {outputPath}!", "Concluído", MessageBoxButton.OK);
+            conexao.AtualizarExecucao("welcome");
             this.Close();
         }
 

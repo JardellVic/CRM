@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using CRM.conexao;
 using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -9,6 +10,7 @@ namespace CRM
 {
     public partial class relacaoAntiparasitario : Window
     {
+        conexaoCRM conexao = new conexaoCRM();
         public relacaoAntiparasitario()
         {
             InitializeComponent();
@@ -169,6 +171,7 @@ namespace CRM
                     Dispatcher.Invoke(() =>
                     {
                         MessageBox.Show($"Arquivo salvo: {outputFilePath}", "Concluído", MessageBoxButton.OK);
+                        conexao.AtualizarExecucao("antiparasitario");
                         this.Close();
                     });
                 }
@@ -177,6 +180,7 @@ namespace CRM
                     Dispatcher.Invoke(() =>
                     {
                         MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+                        
                         this.Close();
                     });
                 }

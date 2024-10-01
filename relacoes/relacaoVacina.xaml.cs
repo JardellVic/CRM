@@ -10,6 +10,7 @@ namespace CRM
 {
     public partial class relacaoVacina : Window
     {
+        conexaoCRM conexao = new conexaoCRM();
         private DataTable _dataTable;
         private conexaoMouraVacina dbHelper;
         public relacaoVacina()
@@ -112,6 +113,7 @@ namespace CRM
             progressBar.Visibility = Visibility.Collapsed;
 
             MessageBox.Show($"Arquivo salvo!", "Concluído", MessageBoxButton.OK);
+            conexao.AtualizarExecucao("vacina");
             this.Close();
         }
 

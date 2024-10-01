@@ -1,4 +1,5 @@
-﻿using OfficeOpenXml;
+﻿using CRM.conexao;
+using OfficeOpenXml;
 using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -9,6 +10,7 @@ namespace CRM
 {
     public partial class relacaoRacao : Window
     {
+        conexaoCRM conexao = new conexaoCRM();
         public relacaoRacao()
         {
             InitializeComponent();
@@ -170,6 +172,7 @@ namespace CRM
 
                         newPackage.Save();
                     }
+                    conexao.AtualizarExecucao("racao");
                 }
             }
             catch (Exception ex)

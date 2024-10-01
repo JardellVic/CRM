@@ -17,8 +17,8 @@
                  Background="#FF3C3C3C"
                  TextAlignment="Center"
                  Foreground="Black"
-                 Text="MKTCRM"
-                 IsReadOnly="True" SelectionOpacity="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                 Text="luiz"
+                 IsReadOnly="False" SelectionOpacity="10" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
         <PasswordBox x:Name="txtPass"
                      HorizontalAlignment="Center"
                      Margin="0,335,0,0"

@@ -7,12 +7,11 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using Microsoft.Win32;
 using OfficeOpenXml;
-using Newtonsoft.Json.Linq;
 using CRM.conexao.API;
 using System.Windows.Threading;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
 using System.Text.Json;
+using CRM.Ajuda;
+using CRM.conexao;
 
 namespace CRM
 {
@@ -26,9 +25,10 @@ namespace CRM
     public partial class Home : Window
     {
         #region Properties
-
+        private conexaoCRM _conexaoCRM;
+        private string _username;
         string desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Relações");
-        public static Home Instance { get; private set; } = new Home();
+        public static Home Instance { get; private set; }
         public string TemplateIdSelecionado { get; set; } = string.Empty;
         public List<LineData> LinhasParaEnviar { get; private set; } = [];
 
@@ -44,8 +44,7 @@ namespace CRM
         private int currentIndex = 0;
         #endregion
 
-        #region API PLANETFONE
-        public Home()
+        public Home(string username)
         {
             InitializeComponent();
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -59,9 +58,15 @@ namespace CRM
             Instance = this;
             this.ResizeMode = ResizeMode.NoResize;
             SelectFileButton.IsEnabled = false;
-            lblData.Content = DateTime.Now.ToString("dd/mm/yyyy");
+            lblData.Content = DateTime.Now.ToString("dd/MM/yyyy");
+            _username = username;
+            lblUsuario.Content = username;
+            _conexaoCRM = new conexaoCRM();
+            AtualizarLabelsGerar();
+            AtualizarLabelsVerificar();
         }
 
+        #region API PLANETFONE
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Application.Current.Shutdown();
@@ -600,13 +605,20 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("antiparasitario");
                 txtVeriAntiparasitario.Text = "Verificar Anti-Parasitário:✅";
             }
             else
             {
                 MessageBox.Show("O arquivo Antiparasitario.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            
+
+        }
+
+        private void HelpAntiparasitario_Click(object sender, RoutedEventArgs e)
+        {
+            HelpAntiparasitario helpantiparasitario = new HelpAntiparasitario();
+            helpantiparasitario.ShowDialog();
         }
 
         private void suplemento_Click(object sender, RoutedEventArgs e)
@@ -627,6 +639,7 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("suplemento");
                 txtVeriSuplemento.Text = "Verificar Suplemento:✅";
             }
             else
@@ -634,6 +647,12 @@ namespace CRM
                 MessageBox.Show("O arquivo Suplemento.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             
+        }
+
+        private void HelpSuplemento_Click(object sender, RoutedEventArgs e)
+        {
+            helpSuplemento helpsuplemento = new helpSuplemento();
+            helpsuplemento.ShowDialog();
         }
 
         private void vermifugo_Click(object sender, RoutedEventArgs e)
@@ -654,6 +673,7 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("vermifugo");
                 txtVeriVermifugo.Text = "Verificar Vermifugo:✅";
             }
             else
@@ -682,6 +702,7 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("racao");
                 txtVeriRacao.Text = "Verificar Ração:✅";
             }
             else
@@ -708,6 +729,7 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("welcome");
                 txtVeriWelcome.Text = "Verificar Welcome:✅";
             }
             else
@@ -734,6 +756,7 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("vacina");
                 txtVeriVacina.Text = "Verificar Vacina:✅";
             }
             else
@@ -760,6 +783,7 @@ namespace CRM
             {
                 // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                _conexaoCRM.AtualizarExecucaoVerificar("milteforan");
                 txtVeriMilteforan.Text = "Verificar Milteforan:✅";
             }
             else
@@ -780,7 +804,62 @@ namespace CRM
             var relacaoWindow = new relacaoCpP();
             relacaoWindow.Show();
         }
-        #endregion
+
+        private void AtualizarLabelsGerar()
+        {
+            try
+            {
+                var controle = _conexaoCRM.ObterControleExecucaoGerar();
+
+                if (controle != null)
+                {
+                    lblGerarAntiparasitario.Text = controle.Antiparasitario ? "Gerar Anti-Parasitário:✅" : "Gerar Anti-Parasitário:";
+                    lblGerarSuplmento.Text = controle.Suplemento ? "Gerar Suplemento:✅" : "Gerar Suplemento:";
+                    lblGerarVermifugo.Text = controle.Vermifugo ? "Gerar Vermífugo:✅" : "Gerar Vermífugo:";
+                    lblGerarRacao.Text = controle.Racao ? "Gerar Ração:✅" : "Gerar Ração:";
+                    lblGerarWelcome.Text = controle.Welcome ? "Gerar Welcome:✅" : "Gerar Welcome:";
+                    lblGerarVacina.Text = controle.Vacina ? "Gerar Vacina:✅" : "Gerar Vacina:";
+                    lblGerarMilteforan.Text = controle.Milteforan ? "Gerar Milteforan:✅" : "Gerar Milteforan:";
+                }
+                else
+                {
+                    MessageBox.Show("REGISTRO DE EXECUÇÃO NÃO CRIADO");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao atualizar labels: {ex.Message}");
+            }
+        }
+
+        private void AtualizarLabelsVerificar()
+        {
+            try
+            {
+                var controle = _conexaoCRM.ObterControleExecucaoVerificar();
+
+                if (controle != null)
+                {
+                    txtVeriAntiparasitario.Text = controle.Antiparasitario ? "Verificar Anti-Parasitário:✅" : "Verificar Anti-Parasitário:";
+                    txtVeriSuplemento.Text = controle.Suplemento ? "Verificar Suplemento:✅" : "Verificar Suplemento:";
+                    txtVeriVermifugo.Text = controle.Vermifugo ? "Verificar Vermífugo:✅" : "Verificar Vermífugo:";
+                    txtVeriRacao.Text = controle.Racao ? "Verificar Ração:✅" : "Verificar Ração:";
+                    txtVeriWelcome.Text = controle.Welcome ? "Verificar Welcome:✅" : "Verificar Welcome:";
+                    txtVeriVacina.Text = controle.Vacina ? "Verificar Vacina:✅" : "Verificar Vacina:";
+                    txtVeriMilteforan.Text = controle.Milteforan ? "Verificar Milteforan:✅" : "Verificar Milteforan:";
+                }
+                else
+                {
+                    MessageBox.Show("REGISTRO DE EXECUÇÃO NÃO CRIADO");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro ao atualizar labels: {ex.Message}");
+            }
+        }
 
     }
+    #endregion
+
 }
