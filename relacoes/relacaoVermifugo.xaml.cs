@@ -44,7 +44,7 @@ namespace CRM
 
                     dataTable.Columns.Add("Grupo", typeof(int));
 
-                    var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
+                    var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "HUBBI", "CONSUMIDOR FINAL" };
                     var pattern = string.Join("|", caracteresIndesejados.Select(System.Text.RegularExpressions.Regex.Escape));
                     var filteredRows = dataTable.AsEnumerable()
                         .Where(row => !System.Text.RegularExpressions.Regex.IsMatch(row.Field<string>("nome"), pattern))

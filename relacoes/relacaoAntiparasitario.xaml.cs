@@ -74,7 +74,7 @@ namespace CRM
                     dataTable.Columns.Add("Grupo", typeof(int));
                     dataTable.Columns.Add("DataFiltro", typeof(string));
 
-                    var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
+                    var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE","HUBBI", "CONSUMIDOR FINAL" };
                     var pattern = string.Join("|", caracteresIndesejados.Select(Regex.Escape));
 
                     var filteredRows = dataTable.AsEnumerable()

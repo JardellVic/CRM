@@ -48,7 +48,7 @@ namespace CRM
             DateTime endDate = dataFinal.SelectedDate!.Value;
             string produtoFilter = txtProduto.Text.Trim();
             var termosBusca = produtoFilter.Split(new[] { '%' }, StringSplitOptions.RemoveEmptyEntries);
-            var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "CONSUMIDOR FINAL" };
+            var caracteresIndesejados = new List<string> { "@", "*", "#", "MERCADO LIVRE", "HUBBI", "CONSUMIDOR FINAL" };
             dbHelper = new conexaoCpP();
             DataTable dt = dbHelper.FetchData(startDate, endDate);
 

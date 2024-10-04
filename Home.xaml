@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Gestão de Relacionamento com o Cliente (CRM)" Height="741" Width="1280" Background="#FF191919" WindowStartupLocation="CenterScreen">
     <Grid Width="1280" Height="720">
-        <Menu x:Name="menuBar" Margin="0,0,0,698" Background="#FF2F2F2F">
+        <Menu x:Name="menuBar" Margin="0,0,0,675" Background="#FF2F2F2F">
             <MenuItem x:Name="antiparasitario" Header="Antiparasitario" Foreground="White" Click="antiparasitario_Click"/>
             <MenuItem x:Name="suplemento" Header="Suplemento" Foreground="White" Click="suplemento_Click"/>
             <MenuItem x:Name="vermifugo" Header="Vermifugo" Foreground="White" Click="vermifugo_Click"/>
@@ -35,7 +35,7 @@
 
         </Menu>
 
-        <GroupBox x:Name="grpAnalises" Header="Analisar" Margin="10,18,700,474" Foreground="White">
+        <GroupBox x:Name="grpAnalises" Header="Analisar" Margin="14,50,696,429" Foreground="White">
             <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
                 <!-- Definindo as linhas e colunas do Grid -->
                 <Grid.RowDefinitions>
@@ -55,49 +55,49 @@
                 <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarAntiparasitario" Text="Gerar Anti-Parasitário:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriAntiparasitario" Text="Verificar Anti-Parasitário:" Foreground="White"/>
-                    <Button x:Name="vrfcAntiparasitario" Content="Verificar" Width="151" Height="20" HorizontalAlignment="Left" Click="vrfcAntiparasitario_Click"/>
+                    <Button x:Name="vrfcAntiparasitario" Content="Verificar" Width="151" Height="25" HorizontalAlignment="Left" Click="vrfcAntiparasitario_Click" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarSuplmento" Text="Gerar Suplemento:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriSuplemento" Text="Verificar Suplemento:" Foreground="White"/>
-                    <Button x:Name="vrfcSuplemento" Content="Verificar" Width="130" Height="20" Click="vrfcSuplemento_Click"/>
+                    <Button x:Name="vrfcSuplemento" Content="Verificar" Width="130" Height="25" Click="vrfcSuplemento_Click" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarVermifugo" Text="Gerar Vermífugo:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriVermifugo" Text="Verificar Vermífugo:" Foreground="White"/>
-                    <Button x:Name="vrfcVermifugo" Content="Verificar" Width="125" Height="20" Click="vrfcVermifugo_Click"/>
+                    <Button x:Name="vrfcVermifugo" Content="Verificar" Width="125" Height="25" Click="vrfcVermifugo_Click" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarRacao" Text="Gerar Ração:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriRacao" Text="Verificar Ração:" Foreground="White"/>
-                    <Button x:Name="vrfcRacao" Content="Verificar" Width="110" Height="20" Click="vrfcRacao_Click"/>
+                    <Button x:Name="vrfcRacao" Content="Verificar" Width="110" Height="25" Click="vrfcRacao_Click" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <!-- Linha 2 -->
                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarWelcome" Text="Gerar Welcome:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriWelcome" Text="Verificar Welcome:" Foreground="White"/>
-                    <Button x:Name="vrfcWelcome" Content="Verificar" Width="151" Height="20" HorizontalAlignment="Left" Click="vrfcWelcome_Click"/>
+                    <Button x:Name="vrfcWelcome" Content="Verificar" Width="151" Height="25" HorizontalAlignment="Left" Click="vrfcWelcome_Click" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="5,5,5,5" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarVacina" Text="Gerar Vacina:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriVacina" Text="Verificar Vacina:" Foreground="White"/>
-                    <Button x:Name="vrfcVacina" Content="Verificar" Width="130" Height="20" Click="vrfcVacina_Click"/>
+                    <Button x:Name="vrfcVacina" Content="Verificar" Width="130" Height="25" Click="vrfcVacina_Click" Margin="0,5,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="5,5,5,5" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock x:Name="lblGerarMilteforan" Text="Gerar Milteforan:" Foreground="White"/>
                     <TextBlock x:Name="txtVeriMilteforan" Text="Verificar Milteforan:" Foreground="White"/>
-                    <Button x:Name="vrfcMilteforan" Content="Verificar" Width="124" Height="20" Click="vrfcMilteforan_Click"/>
+                    <Button x:Name="vrfcMilteforan" Content="Verificar" Width="124" Height="25" Click="vrfcMilteforan_Click" Cursor="Hand" Margin="0,5,0,0"/>
                 </StackPanel>
 
             </Grid>
         </GroupBox>
-        <GroupBox x:Name="disparoPlanet" Header="Disparo" Margin="585,18,24,58" Foreground="White">
+        <GroupBox x:Name="disparoPlanet" Header="Disparo" Margin="585,50,24,58" Foreground="White">
             <Grid Height="634">
                 <ComboBox x:Name="cmbTemplates" HorizontalAlignment="Center" Margin="0,43,0,0" VerticalAlignment="Top" Width="639" Height="28"/>
                 <Label Content="Templates" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" FontSize="20"/>
@@ -169,7 +169,7 @@
                 <TextBlock x:Name="statusTempoText" Text="Tempo Médio:" />
             </StatusBarItem>
         </StatusBar>
-        <ScrollViewer x:Name="scrollViewerConsoleT" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="17,257,700,157">
+        <ScrollViewer x:Name="scrollViewerConsoleT" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Margin="17,300,700,157">
             <TextBlock x:Name="txtBlockConsoleResponse" TextWrapping="Wrap" Background="#FF1F1E1E" Foreground="White" Width="553"/>
         </ScrollViewer>
     </Grid>

@@ -106,6 +106,7 @@ namespace CRM
                         .Where(row => !row["nome"].ToString()!.Contains("#") &&
                                       !row["nome"].ToString()!.Contains("@") &&
                                       !row["nome"].ToString()!.Contains("&") &&
+                                      !row["nome"].ToString()!.Contains("HUBBI") &&
                                       !row["nome"].ToString()!.Contains("MERCADO LIVRE") &&
                                       !row["nome"].ToString()!.Contains("CONSUMIDOR FINAL") &&
                                       DateTime.TryParse(row["Data da Venda"].ToString(), out DateTime dataVenda) && dataVenda >= recentDate &&

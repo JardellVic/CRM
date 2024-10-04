@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿#region Diretivas
+using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Threading;
 using System.Text.Json;
 using CRM.Ajuda;
 using CRM.conexao;
+#endregion
 
 namespace CRM
 {
@@ -25,13 +27,12 @@ namespace CRM
     public partial class Home : Window
     {
         #region Properties
-        private conexaoCRM _conexaoCRM;
-        private string _username;
+
         string desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Relações");
         public static Home Instance { get; private set; }
         public string TemplateIdSelecionado { get; set; } = string.Empty;
         public List<LineData> LinhasParaEnviar { get; private set; } = [];
-
+        //-----------------------------------------------------------------------------------------------------------------------//
         private readonly APIManager apiManager;
         private readonly HttpClient client;
         private readonly Dictionary<string, string> templateTextMap;
@@ -42,6 +43,8 @@ namespace CRM
         private bool isDisparoPaused = false;
         private bool isDisparoRunning = false;
         private int currentIndex = 0;
+        private conexaoCRM _conexaoCRM;
+        private string _username;
         #endregion
 
         public Home(string username)
@@ -66,10 +69,16 @@ namespace CRM
             AtualizarLabelsVerificar();
         }
 
-        #region API PLANETFONE
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        #region API PlanetFone
+
+        private static void ShowError(string message)
+        {
+            MessageBox.Show(message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async void btnEnviarDisparo_Click(object sender, RoutedEventArgs e)
@@ -106,11 +115,6 @@ namespace CRM
 
                 txtBlockConsole.Inlines.Add(new Run("\nDisparo finalizado.") { Foreground = Brushes.Red });
             }
-        }
-
-        private static void ShowError(string message)
-        {
-            MessageBox.Show(message, "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private async void LoadTemplatesAsync()
@@ -411,7 +415,7 @@ namespace CRM
 
             progressDisparo.IsIndeterminate = false;
             progressDisparo.Maximum = totalLinhas;
-            progressDisparo.Value = currentIndex; // Defina o progresso com base no índice atual
+            progressDisparo.Value = currentIndex;
 
             txtBlockConsole.Inlines.Clear();
             txtBlockConsoleResponse.Inlines.Clear();
@@ -489,7 +493,6 @@ namespace CRM
                 var (optinResult, responseBody) = await apiManager.OptinNumeroAsync(linha.Numero);
                 (var sendResult, string responseBodyT) = await apiManager.EnviarLinhaAsync(TemplateIdSelecionado, linha.Numero, linha.Nome, linha.Variaveis);
 
-                // Format JSON response
                 string formattedResponseBody = FormatJson(responseBody);
                 string formattedResponseBodyT = FormatJson(responseBodyT);
 
@@ -534,12 +537,10 @@ namespace CRM
             {
                 var jsonObject = JsonSerializer.Deserialize<JsonElement>(json);
 
-                // Verifica se a propriedade 'data' tem a propriedade 'msg' ou 'messageId'
                 if (jsonObject.TryGetProperty("data", out var dataProperty))
                 {
                     if (dataProperty.TryGetProperty("msg", out var msgProperty))
                     {
-                        // Formato com 'msg'
                         var status = jsonObject.GetProperty("status").GetString();
                         var message = msgProperty.GetString();
                         return $"Status: {status}\nMensagem: {message}";
@@ -581,7 +582,7 @@ namespace CRM
 
         #endregion
 
-        #region lISTAS 
+        #region Listas 
         private void BancoMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AtualizarBanco atualizarBancoPage = new();
@@ -597,13 +598,10 @@ namespace CRM
 
         private void vrfcAntiparasitario_Click(object sender, RoutedEventArgs e)
         {
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Antiparasitario.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("antiparasitario");
                 txtVeriAntiparasitario.Text = "Verificar Anti-Parasitário:✅";
@@ -630,14 +628,10 @@ namespace CRM
 
         private void vrfcSuplemento_Click(object sender, RoutedEventArgs e)
         {
-
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Suplemento.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("suplemento");
                 txtVeriSuplemento.Text = "Verificar Suplemento:✅";
@@ -645,8 +639,7 @@ namespace CRM
             else
             {
                 MessageBox.Show("O arquivo Suplemento.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            
+            }   
         }
 
         private void HelpSuplemento_Click(object sender, RoutedEventArgs e)
@@ -664,14 +657,10 @@ namespace CRM
 
         private void vrfcVermifugo_Click(object sender, RoutedEventArgs e)
         {
-
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Vermifugo.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("vermifugo");
                 txtVeriVermifugo.Text = "Verificar Vermifugo:✅";
@@ -680,8 +669,6 @@ namespace CRM
             {
                 MessageBox.Show("O arquivo Vermifugo.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            
-
         }
 
         private void racao_Click(object sender, RoutedEventArgs e)
@@ -693,14 +680,10 @@ namespace CRM
 
         private void vrfcRacao_Click(object sender, RoutedEventArgs e)
         {
-
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Racao.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("racao");
                 txtVeriRacao.Text = "Verificar Ração:✅";
@@ -708,8 +691,7 @@ namespace CRM
             else
             {
                 MessageBox.Show("O arquivo Racao.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            
+            }     
         }
 
         private void welcome_Click(object sender, RoutedEventArgs e)
@@ -721,13 +703,10 @@ namespace CRM
 
         private void vrfcWelcome_Click(object sender, RoutedEventArgs e)
         {
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Welcome.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("welcome");
                 txtVeriWelcome.Text = "Verificar Welcome:✅";
@@ -736,7 +715,6 @@ namespace CRM
             {
                 MessageBox.Show("O arquivo Welcome.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
-            
         }
 
         private void vacina_Click(object sender, RoutedEventArgs e)
@@ -748,13 +726,10 @@ namespace CRM
 
         private void vrfcVacina_Click(object sender, RoutedEventArgs e)
         {
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Vacina.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("vacina");
                 txtVeriVacina.Text = "Verificar Vacina:✅";
@@ -762,8 +737,7 @@ namespace CRM
             else
             {
                 MessageBox.Show("O arquivo Vacina.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            
+            }           
         }
 
         private void milteforan_Click(object sender, RoutedEventArgs e)
@@ -775,13 +749,10 @@ namespace CRM
 
         private void vrfcMilteforan_Click(object sender, RoutedEventArgs e)
         {
-            // Combinar o caminho do Desktop com o nome do arquivo
             string filePath = Path.Combine(desktopPath, "Milteforan.xlsx");
 
-            // Verificar se o arquivo existe
             if (File.Exists(filePath))
             {
-                // Abrir o arquivo
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 _conexaoCRM.AtualizarExecucaoVerificar("milteforan");
                 txtVeriMilteforan.Text = "Verificar Milteforan:✅";
@@ -789,8 +760,7 @@ namespace CRM
             else
             {
                 MessageBox.Show("O arquivo Milteforan.xlsx não foi encontrado no Desktop.", "Arquivo não encontrado", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            
+            }   
         }
 
         private void relatorio_Click(object sender, RoutedEventArgs e)
@@ -858,8 +828,6 @@ namespace CRM
                 MessageBox.Show($"Erro ao atualizar labels: {ex.Message}");
             }
         }
-
     }
     #endregion
-
 }

@@ -131,6 +131,7 @@ namespace CRM
                 .Where(row => !row["Proprietario"].ToString().Contains("#") &&
                               !row["Proprietario"].ToString().Contains("@") &&
                               !row["Proprietario"].ToString().Contains("&") &&
+                              !row["Proprietario"].ToString().Contains("HUBBI") &&
                               !row["Proprietario"].ToString().Contains("MERCADO LIVRE") &&
                               !row["Proprietario"].ToString().Contains("CONSUMIDOR FINAL"));
 
